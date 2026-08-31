@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คลังความรู้ - คู่มือการใช้งานอุปกรณ์วิทยาศาสตร์</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    body { background-color: #f4f6f9; padding: 30px 20px; color: #333; }
+    .container { max-width: 1000px; margin: 0 auto; background: #ffffff; padding: 35px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; border-bottom: 2px solid #edf2f7; padding-bottom: 20px; }
+    .header h1 { font-size: 24px; color: #2d3748; display: flex; align-items: center; gap: 10px; }
+    .back-btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #ffffff; background-color: #7494c0; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; transition: background-color 0.2s; }
+    .back-btn:hover { background-color: #5d7ca4; }
+    .knowledge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
+    @media (max-width: 500px) { .knowledge-grid { grid-template-columns: 1fr; } }
+    .tool-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.01); }
+    .tool-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.05); border-color: #16a085; }
+    .tool-info { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 15px; }
+    .tool-icon { width: 50px; height: 50px; border-radius: 10px; background-color: #e8f8f5; color: #16a085; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; border: 1px solid #a3e4d7; }
+    .tool-title { font-size: 16px; font-weight: bold; color: #1a202c; margin-bottom: 4px; }
+    .tool-desc { font-size: 13px; color: #718096; line-height: 1.4; }
+    .media-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
+    .tag-video { background-color: #feebc8; color: #c05621; }
+    .tag-image { background-color: #ebf8ff; color: #2b6cb0; }
+    .tag-pdf { background-color: #fed7d7; color: #9b2c2c; }
+    .open-btn { background: #1e7e34; color: white; text-decoration: none; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s; }
+    .open-btn:hover { background: #155d25; }
+    .open-btn i.fa-google-drive { color: #ffc107; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fa-solid fa-book-open" style="color: #16a085;"></i> คลังความรู้ - คู่มือการใช้งานอุปกรณ์</h1>
+      <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปห้องแชต</a>
+    </div>
+    <div class="knowledge-grid">
+      <div class="tool-card">
+        <div class="tool-info">
+          <div class="tool-icon"><i class="fa-solid fa-chart-area"></i></div>
+          <div>
+            <div class="tool-title">BET</div>
+            <div class="tool-desc">เครื่องวิเคราะห์หาพื้นที่ผิว และการกระจายขนาดรูพรุนของสาร (Surface Area and Porosity Analyzer)</div>
+            <div class="media-tags">
+              <span class="tag tag-video"><i class="fa-solid fa-video"></i> มีไฟล์วิดีโอ</span>
+              <span class="tag tag-image"><i class="fa-solid fa-image"></i> รูปภาพ</span>
+              <span class="tag tag-pdf"><i class="fa-regular fa-file-pdf"></i> คู่มือ PDF</span>
+            </div>
+          </div>
+        </div>
+        <a href="https://drive.google.com/drive/folders/1G3kO_d_BJwbwWT-rUkIsFnDRtBLR0--o?usp=sharing" target="_blank" class="open-btn"><i class="fa-brands fa-google-drive"></i> เปิดโฟลเดอร์ Google Drive</a>
+      </div>
+      <div class="tool-card">
+        <div class="tool-info">
+          <div class="tool-icon"><i class="fa-solid fa-dna"></i></div>
+          <div>
+            <div class="tool-title">CHNS</div>
+            <div class="tool-desc">เครื่องวิเคราะห์หาปริมาณธาตุองค์ประกอบ คาร์บอน ไฮโดรเจน ไนโตรเจน และซัลเฟอร์ (Elemental Analyzer)</div>
+            <div class="media-tags">
+              <span class="tag tag-video"><i class="fa-solid fa-video"></i> มีไฟล์วิดีโอ</span>
+              <span class="tag tag-image"><i class="fa-solid fa-image"></i> รูปภาพ</span>
+              <span class="tag tag-pdf"><i class="fa-regular fa-file-pdf"></i> คู่มือ PDF</span>
+            </div>
+          </div>
+        </div>
+        <a href="https://drive.google.com/drive/folders/142tXZu3SYINo5XA2iiVlI9EbxqwkuYSs?usp=sharing" target="_blank" class="open-btn"><i class="fa-brands fa-google-drive"></i> เปิดโฟลเดอร์ Google Drive</a>
+      </div>
+      <div class="tool-card">
+        <div class="tool-info">
+          <div class="tool-icon"><i class="fa-solid fa-wave-square"></i></div>
+          <div>
+            <div class="tool-title">FTIR</div>
+            <div class="tool-desc">เครื่องฟูเรียร์ทรานสฟอร์มอินฟราเรดสเปกโทรมิเตอร์ สำหรับวิเคราะห์สารอินทรีย์และหมู่ฟังก์ชัน (Fourier Transform Infrared Spectrometer)</div>
+            <div class="media-tags">
+              <span class="tag tag-video"><i class="fa-solid fa-video"></i> มีไฟล์วิดีโอ</span>
+              <span class="tag tag-image"><i class="fa-solid fa-image"></i> รูปภาพ</span>
+              <span class="tag tag-pdf"><i class="fa-regular fa-file-pdf"></i> คู่มือ PDF</span>
+            </div>
+          </div>
+        </div>
+        <a href="https://drive.google.com/drive/folders/1mfVc3475iPuCSKPrX7SLYHcY-ljPgcpH?usp=sharing" target="_blank" class="open-btn"><i class="fa-brands fa-google-drive"></i> เปิดโฟลเดอร์ Google Drive</a>
+      </div>
+      <div class="tool-card">
+        <div class="tool-info">
+          <div class="tool-icon"><i class="fa-solid fa-temperature-high"></i></div>
+          <div>
+            <div class="tool-title">TGA</div>
+            <div class="tool-desc">เครื่องวิเคราะห์การเปลี่ยนแปลงน้ำหนักของสารโดยอาศัยความร้อน (Thermogravimetric Analyzer)</div>
+            <div class="media-tags">
+              <span class="tag tag-video"><i class="fa-solid fa-video"></i> มีไฟล์วิดีโอ</span>
+              <span class="tag tag-image"><i class="fa-solid fa-image"></i> รูปภาพ</span>
+              <span class="tag tag-pdf"><i class="fa-regular fa-file-pdf"></i> คู่มือ PDF</span>
+            </div>
+          </div>
+        </div>
+        <a href="https://drive.google.com/drive/folders/17UAWXmqPyc1CGORYM0QTr9Lfhl9f1Fmt?usp=sharing" target="_blank" class="open-btn"><i class="fa-brands fa-google-drive"></i> เปิดโฟลเดอร์ Google Drive</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
