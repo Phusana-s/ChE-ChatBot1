@@ -242,7 +242,7 @@
 
   <script>
     // ⚠️ นำ URL จาก Google Apps Script (Deploy > Web App) มาวางตรงนี้
-    const API_URL = "https://script.google.com/macros/s/AKfycby075ax9BcHNtTSgnm4wK0bqI3YeHwa6XWujxZu74uFVBM_VZRXo1VdWHLK5yKr64cP/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbxF_7O5I-7nQ86jKMNeJtR8gNs5ujUZSR8cGIeuqWPu08Cqa4_ffzIfgVF00pfMC1oR/exec"; 
 
     /* --------- ระบบจัดการ Modal --------- */
     function openRepairModal() {
@@ -354,22 +354,36 @@
       document.getElementById('viewLocation').innerText = data.location;
       document.getElementById('viewDetail').innerText = data.detail;
       
-      // 1. จัดการสีป้ายสถานะ
+      // 1. จัดการสีป้ายสถานะและข้อความกำกับ
       const badge = document.getElementById('viewStatus');
       const statusText = data.status.trim();
-      badge.innerText = statusText;
       
       let badgeColor = "#6c757d"; // สีเทาเริ่มต้น (Waiting to be confirmed)
-      if (statusText === "Confirmed") badgeColor = "#007bff"; // สีน้ำเงิน
-      else if (statusText === "In Progress") badgeColor = "#ffc107"; // สีเหลือง
-      else if (statusText === "Completed") badgeColor = "#28a745"; // สีเขียว
-      else if (statusText === "Fail") badgeColor = "#dc3545"; // สีแดง
+      let displayText = statusText; 
+
+      if (statusText === "Confirmed") { 
+        badgeColor = "#007bff"; 
+        displayText = "Confirmed : เจ้าหน้าที่รับทราบเรื่องแล้ว"; 
+      }
+      else if (statusText === "In Progress") { 
+        badgeColor = "#ffc107"; 
+        displayText = "In Progress : อยู่ระหว่างดำเนินการ"; 
+      }
+      else if (statusText === "Completed") { 
+        badgeColor = "#28a745"; 
+        displayText = "Completed : ดำเนินการซ่อมเรียบร้อยแล้ว"; 
+      }
+      else if (statusText === "Unable to Repair") { 
+        badgeColor = "#dc3545"; 
+        displayText = "Unable to Repair : ไม่สามารถดำเนินการซ่อมได้"; 
+      }
       
+      badge.innerText = displayText;
       badge.style.backgroundColor = badgeColor;
 
-      // 2. จัดการหมายเหตุจากช่าง (แสดงเฉพาะ In Progress, Completed, Fail)
+      // 2. จัดการหมายเหตุจากช่าง (แสดงเฉพาะ In Progress, Completed, Unable to Repair)
       const remarkBox = document.getElementById('viewRemark');
-      const showRemarkStatus = ["In Progress", "Completed", "Fail"];
+      const showRemarkStatus = ["In Progress", "Completed", "Unable to Repair"];
       
       if (data.remark && showRemarkStatus.includes(statusText)) {
         remarkBox.innerHTML = `<strong><i class="fa-solid fa-circle-exclamation"></i> หมายเหตุจากช่าง:</strong><br>${data.remark}`;
@@ -378,24 +392,20 @@
         remarkBox.classList.add('hidden');
       }
 
-      // 3. จัดการรูปภาพหลักฐาน (แสดงเฉพาะ Completed, Fail)
+      // 3. จัดการรูปภาพหลักฐาน (แสดงเฉพาะ Completed, Unable to Repair)
       const imgBox = document.getElementById('viewImage');
-      const showImageStatus = ["Completed", "Fail"];
+      const showImageStatus = ["Completed", "Unable to Repair"];
       
       if (data.image && showImageStatus.includes(statusText)) {
         let imageUrl = data.image.trim();
         
-        // ตรวจจับลิงก์ Google Drive
         const driveMatch = imageUrl.match(/[-\w]{25,}/);
         if (driveMatch && imageUrl.includes('drive.google.com')) {
-          // แก้ไข: ใช้ iframe ในการพรีวิวรูปจาก Drive แทนเพื่อเลี่ยงการถูกบล็อก
           const fileId = driveMatch[0];
           imgBox.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview" width="100%" height="250" style="border: 1px solid #eee; border-radius: 8px; margin-top: 15px; background: #f8f9fa;"></iframe>`;
         } else {
-          // กรณีเป็นลิงก์รูปจากเว็บอื่น (เช่น Imgur, ภาพเว็บปกติ)
           imgBox.innerHTML = `<img src="${imageUrl}" alt="รูประยะปฏิบัติงาน" style="width: 100%; border-radius: 8px; margin-top: 15px; border: 1px solid #eee;">`;
         }
-        
         imgBox.classList.remove('hidden');
       } else {
         imgBox.classList.add('hidden');
