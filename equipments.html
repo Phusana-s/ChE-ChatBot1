@@ -2,69 +2,696 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>คลังบริการเบิก-ยืมคืนอุปกรณ์และครุภัณฑ์</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ระบบบริการเบิก-ยืมคืนอุปกรณ์และห้องปฏิบัติการ</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-    body { background-color: #f4f6f9; padding: 30px 20px; color: #333; }
+    html, body { margin: 0; padding: 0; height: 100%; height: 100dvh; }
+    body { background-color: #f4f6f9; padding: 30px 20px; color: #333; overflow-y: auto; }
+    
     .container { max-width: 850px; margin: 0 auto; background: #ffffff; padding: 35px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
     .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 2px solid #edf2f7; padding-bottom: 20px; }
     .header h1 { font-size: 24px; color: #2d3748; display: flex; align-items: center; gap: 10px; }
     .back-btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #ffffff; background-color: #7494c0; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; transition: background-color 0.2s; cursor: pointer; }
     .back-btn:hover { background-color: #5d7ca4; }
-    .file-grid { display: flex; flex-direction: column; gap: 12px; }
-    .file-card { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; transition: all 0.2s; }
+
+    .file-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .file-card { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; transition: all 0.2s; cursor: pointer; }
     .file-card:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.04); border-color: #cbd5e1; }
     .file-info { display: flex; align-items: center; gap: 15px; }
-    .file-info i.fa-google-drive { color: #ffc107; font-size: 28px; }
-    .file-name { font-weight: bold; font-size: 15px; color: #1a202c; line-height: 1.4; }
-    .file-tag { display: inline-block; background-color: #feebc8; color: #c05621; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-top: 4px; font-weight: 600; }
+    .action-icon { font-size: 32px; }
+    .icon-borrow { color: #e67e22; }
+    .icon-lab { color: #9b59b6; }
+    .icon-track { color: #007bff; }
+    .icon-pdf { color: #e74c3c; }
+    .file-name { font-weight: bold; font-size: 16px; color: #1a202c; line-height: 1.4; }
+    .file-tag { display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-top: 4px; font-weight: 600; }
+
     .download-btn { background: #1e7e34; color: white; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     .download-btn:hover { background: #155d25; }
-    /* ========================================= */
-    /* โค้ดปรับขนาดสำหรับหน้าจอมือถือ (Responsive) */
-    /* ========================================= */
+
+    /* Modal Styles */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+    .modal-box { background: #fff; padding: 25px; border-radius: 12px; width: 100%; max-width: 600px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px; position: sticky; top: 0; background: white; z-index: 10; }
+    .close-modal { background: none; border: none; font-size: 20px; cursor: pointer; color: #a0aec0; }
+    .hidden { display: none !important; }
+
+    /* Form Styles */
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-weight: bold; font-size: 13px; color: #4a5568; margin-bottom: 5px; }
+    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
+    .form-group input:focus, .form-group select:focus { border-color: #007bff; }
+    
+    .equip-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+    .equip-name { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
+    .qty-btn { width: 35px; height: 35px; border: none; background: #e2e8f0; border-radius: 6px; cursor: pointer; font-weight: bold; color: #333; }
+    .qty-display { width: 30px; text-align: center; font-weight: bold; color: #2d3748; }
+    .remove-btn { color: #dc3545; background: none; border: none; cursor: pointer; font-size: 18px; padding: 0 5px; }
+    .add-equip-btn { background: #e2e8f0; color: #4a5568; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; }
+
+    .btn-main { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; color: white; cursor: pointer; margin-top: 20px; background-color: #e67e22; }
+    .btn-search { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .search-section { display: flex; gap: 10px; margin-bottom: 20px; }
+    .search-input { flex: 1; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
+    
+    .detail-row { margin-bottom: 10px; font-size: 14px; line-height: 1.5; }
+    .detail-label { font-weight: bold; color: #4a5568; display: inline-block; width: 130px; }
+    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; color: white; display: inline-block; margin-top: 5px; }
+    
+    .pdf-list { display: flex; flex-direction: column; gap: 10px; }
+    .pdf-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
+
     @media (max-width: 500px) {
-      /* ปรับหัวกระดาษและปุ่มกลับห้องแชต */
       .header { flex-direction: column; align-items: flex-start; gap: 12px; }
-      .header h1 { font-size: 18px; }
-      .back-btn { padding: 6px 12px; font-size: 12px; width: auto; align-self: flex-start; }
-      
-      /* ปรับกล่องรายการไฟล์และปุ่มเปิดไฟล์/ดาวน์โหลด */
-      .file-card { flex-direction: column; align-items: flex-start; gap: 15px; }
-      .download-btn, .open-btn { width: 100%; justify-content: center; padding: 10px; font-size: 12px; }
+      .back-btn { padding: 6px 12px; font-size: 12px; align-self: flex-start; }
+      .equip-row { flex-wrap: wrap; }
+      .equip-name { min-width: 100%; }
+      .pdf-item { flex-direction: column; gap: 10px; align-items: flex-start; }
+      .download-btn { width: 100%; justify-content: center; }
     }
   </style>
 </head>
 <body>
+
   <div class="container">
     <div class="header">
-      <h1><i class="fa-solid fa-boxes-stacked" style="color: #e67e22;"></i> คลังบริการเบิก-ยืมคืนอุปกรณ์</h1>
+      <h1><i class="fa-solid fa-boxes-stacked" style="color: #e67e22;"></i> บริการเบิกอุปกรณ์และห้องปฏิบัติการ</h1>
       <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปห้องแชต</a>
     </div>
+
     <div class="file-grid">
-      <div class="file-card">
+      <!-- 1. แบบฟอร์มยืม-คืนอุปกรณ์ -->
+      <div class="file-card" onclick="openModal('borrowModal')">
         <div class="file-info">
-          <i class="fa-brands fa-google-drive"></i>
+          <i class="fa-solid fa-box-open action-icon icon-borrow"></i>
           <div>
-            <div class="file-name">แบบฟอร์มขอใช้ห้องปฏิบัติการ-เครื่องมือ-ครุภัณฑ์</div>
-            <span class="file-tag">Google Drive File</span>
+            <div class="file-name">ยืม-คืนอุปกรณ์ (BW)</div>
+            <span class="file-tag">กรอกแบบฟอร์มเพื่อขอยืมอุปกรณ์</span>
           </div>
         </div>
-        <a href="https://drive.google.com/file/d/1el2I5p2JLkAu34FZc5zia03GiWzZnJXA/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
-      <div class="file-card">
+
+      <!-- 2. แบบฟอร์มขอใช้ห้องเรียนและปฏิบัติการ -->
+      <div class="file-card" onclick="openModal('labModal')">
         <div class="file-info">
-          <i class="fa-brands fa-google-drive"></i>
+          <i class="fa-solid fa-flask action-icon icon-lab"></i>
           <div>
-            <div class="file-name">ใบยืมคืน-อุปกรณ์</div>
-            <span class="file-tag">Google Drive File</span>
+            <div class="file-name">ขอใช้ห้องเรียนและปฏิบัติการ (LAB)</div>
+            <span class="file-tag">ฟอร์มจองห้องเรียนและห้องแลป</span>
           </div>
         </div>
-        <a href="https://drive.google.com/file/d/10Kp-HFkjqO3K4sFjFAtMv7UJGmXoQfne/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
+      </div>
+
+      <!-- 3. ติดตามสถานะ (รวมทุกฟอร์ม) -->
+      <div class="file-card" onclick="openTrackingModal()">
+        <div class="file-info">
+          <i class="fa-solid fa-magnifying-glass-chart action-icon icon-track"></i>
+          <div>
+            <div class="file-name">ติดตามสถานะการยืม/จองห้อง</div>
+            <span class="file-tag">ตรวจสอบสถานะการอนุมัติทั้งหมด</span>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
+      </div>
+
+      <!-- 4. รวมลิงก์ไฟล์ PDF -->
+      <div class="file-card" onclick="openModal('pdfModal')">
+        <div class="file-info">
+          <i class="fa-solid fa-file-pdf action-icon icon-pdf"></i>
+          <div>
+            <div class="file-name">เอกสารและแบบฟอร์ม (PDF)</div>
+            <span class="file-tag">ดาวน์โหลดไฟล์เอกสารเพื่อพิมพ์</span>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
     </div>
   </div>
+
+  <!-- ================= 1. Popup ยืมอุปกรณ์ ================= -->
+  <div class="modal-overlay" id="borrowModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>แบบฟอร์มยืมอุปกรณ์</h3>
+        <button class="close-modal" onclick="closeModal('borrowModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="borrowForm" onsubmit="submitBorrowForm(event)">
+        <div class="form-group">
+          <label>ชื่อ-สกุล *</label>
+          <input type="text" id="b_name" required>
+        </div>
+        <div class="form-group">
+          <label>สถานะผู้แจ้ง *</label>
+          <select id="b_userType" onchange="toggleBorrowUserFields()" required>
+            <option value="">-- เลือกสถานะ --</option>
+            <option value="นักศึกษา ป.ตรี">นักศึกษา ป.ตรี</option>
+            <option value="นักศึกษา ป.โท">นักศึกษา ป.โท</option>
+            <option value="นักศึกษา ป.เอก">นักศึกษา ป.เอก</option>
+            <option value="ผู้ช่วยนักวิจัย">ผู้ช่วยนักวิจัย</option>
+            <option value="เจ้าหน้าที่">เจ้าหน้าที่</option>
+            <option value="อาจารย์">อาจารย์</option>
+            <option value="อื่นๆ">อื่นๆ</option>
+          </select>
+        </div>
+        
+        <!-- ซ่อน/แสดง สำหรับนักศึกษา ป.ตรี -->
+        <div id="b_student_fields" class="hidden" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div class="form-group" style="flex: 1; min-width: 140px;">
+            <label>รหัสนักศึกษา</label>
+            <input type="text" id="b_studentId">
+          </div>
+          <div class="form-group" style="width: 80px;">
+            <label>ชั้นปีที่</label>
+            <select id="b_year">
+              <option value="">เลือก</option>
+              <option value="1">1</option><option value="2">2</option>
+              <option value="3">3</option><option value="4">4</option>
+              <option value="5">5</option><option value="6">6</option>
+            </select>
+          </div>
+          <div class="form-group" style="width: 80px;">
+            <label>Section</label>
+            <select id="b_section">
+              <option value="">เลือก</option>
+              <option value="1">1</option><option value="2">2</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ซ่อน/แสดง สำหรับ อื่นๆ -->
+        <div id="b_other_user_div" class="form-group hidden">
+          <label>โปรดระบุสถานะ</label>
+          <input type="text" id="b_otherUser">
+        </div>
+
+        <div class="form-group">
+          <label>เบอร์โทรศัพท์ *</label>
+          <input type="tel" id="b_phone" required>
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" id="b_email" required>
+        </div>
+        <div class="form-group">
+          <label>ขอยืมอุปกรณ์ใช้เพื่อ *</label>
+          <input type="text" id="b_purpose" required>
+        </div>
+        <div class="form-group">
+          <label>ในวิชา / โปรเจค *</label>
+          <input type="text" id="b_subject" required>
+        </div>
+        <div class="form-group">
+          <label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label>
+          <select id="b_advisor" onchange="toggleBorrowAdvisor()" required>
+            <option value="">-- เลือกอาจารย์ --</option>
+            <option value="รศ.ดร.ไชยยันต์ ไชยยะ">รศ.ดร.ไชยยันต์ ไชยยะ</option>
+            <option value="รศ.ดร.ศศิรดี จันทสี">รศ.ดร.ศศิรดี จันทสี</option>
+            <option value="รศ.ดร.วีรินทร์ดา เมนส์">รศ.ดร.วีรินทร์ดา เมนส์</option>
+            <option value="รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย">รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย</option>
+            <option value="รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม">รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม</option>
+            <option value="ผศ.ดร.รินลดา สิริแสงสว่าง">ผศ.ดร.รินลดา สิริแสงสว่าง</option>
+            <option value="ผศ.ยรรยง สุขคล้าย">ผศ.ยรรยง สุขคล้าย</option>
+            <option value="รศ.ศราวุธ จิตต์พินิจ">รศ.ศราวุธ จิตต์พินิจ</option>
+            <option value="รศ.ดร.วีราภรณ์ ผิวสอาด">รศ.ดร.วีราภรณ์ ผิวสอาด</option>
+            <option value="ผศ.ดร.ชัยภพ ศิระวรกุล">ผศ.ดร.ชัยภพ ศิระวรกุล</option>
+            <option value="อาจารย์พุทธิพร เทียมสินสังวร">อาจารย์พุทธิพร เทียมสินสังวร</option>
+            <option value="อาจารย์นวพร เพิ่มสมบัติ">อาจารย์นวพร เพิ่มสมบัติ</option>
+            <option value="อื่นๆ">อื่นๆ</option>
+          </select>
+        </div>
+        
+        <!-- กล่องข้อความจะแสดงเมื่อเลือก "อื่นๆ" -->
+        <div id="b_other_advisor_div" class="form-group hidden">
+          <label>ระบุชื่ออาจารย์</label>
+          <input type="text" id="b_otherAdvisor">
+        </div>
+
+        <div class="form-group">
+          <label>รายการอุปกรณ์ *</label>
+          <div id="equipContainer">
+            <div class="equip-row">
+              <input type="text" class="equip-name" placeholder="ระบุชื่ออุปกรณ์" required>
+              <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+              <span class="qty-display">1</span>
+              <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+              <button type="button" class="remove-btn" style="visibility: hidden;"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+          <button type="button" class="add-equip-btn" onclick="addEquipmentRow()"><i class="fa-solid fa-plus"></i> เพิ่มรายการ</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label>วันและเวลาที่ยืม *</label>
+            <input type="datetime-local" id="b_borrowDate" required>
+          </div>
+          <div class="form-group">
+            <label>กำหนดคืน (เวลา) *</label>
+            <input type="datetime-local" id="b_returnDate" required>
+          </div>
+        </div>
+        
+        <button type="submit" id="btnSubmitBorrow" class="btn-main"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอยืมอุปกรณ์</button>
+      </form>
+      <div id="borrowSuccess" class="hidden" style="text-align: center; padding: 20px 0;">
+        <i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745;"></i>
+        <h3>ส่งคำขอเรียบร้อย!</h3><div id="showTicketId_BW" style="font-weight: bold; font-size: 20px; margin-top: 10px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 2. Popup ขอใช้ห้องปฏิบัติการ ================= -->
+  <div class="modal-overlay" id="labModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>แบบฟอร์มขอใช้ห้องปฏิบัติการ</h3>
+        <button class="close-modal" onclick="closeModal('labModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="labForm" onsubmit="submitLabForm(event)">
+        <div class="form-group">
+          <label>ชื่อ-สกุล *</label>
+          <input type="text" id="l_name" required>
+        </div>
+        <div class="form-group">
+          <label>สถานะผู้แจ้ง *</label>
+          <select id="l_userType" onchange="toggleLabUserFields()" required>
+            <option value="">-- เลือกสถานะ --</option>
+            <option value="นักศึกษา ป.ตรี">นักศึกษา ป.ตรี</option>
+            <option value="นักศึกษา ป.โท">นักศึกษา ป.โท</option>
+            <option value="นักศึกษา ป.เอก">นักศึกษา ป.เอก</option>
+            <option value="ผู้ช่วยนักวิจัย">ผู้ช่วยนักวิจัย</option>
+            <option value="เจ้าหน้าที่">เจ้าหน้าที่</option>
+            <option value="อาจารย์">อาจารย์</option>
+            <option value="อื่นๆ">อื่นๆ</option>
+          </select>
+        </div>
+        
+        <!-- ซ่อน/แสดง สำหรับนักศึกษา ป.ตรี (Lab) -->
+        <div id="l_student_fields" class="hidden" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div class="form-group" style="flex: 1; min-width: 140px;">
+            <label>รหัสนักศึกษา</label>
+            <input type="text" id="l_studentId">
+          </div>
+          <div class="form-group" style="width: 80px;">
+            <label>ชั้นปีที่</label>
+            <select id="l_year">
+              <option value="">เลือก</option>
+              <option value="1">1</option><option value="2">2</option>
+              <option value="3">3</option><option value="4">4</option>
+              <option value="5">5</option><option value="6">6</option>
+            </select>
+          </div>
+          <div class="form-group" style="width: 80px;">
+            <label>Section</label>
+            <select id="l_section">
+              <option value="">เลือก</option>
+              <option value="1">1</option><option value="2">2</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="l_other_user_div" class="form-group hidden">
+          <label>โปรดระบุสถานะ</label>
+          <input type="text" id="l_otherUser">
+        </div>
+
+        <div class="form-group">
+          <label>เบอร์โทรศัพท์ *</label>
+          <input type="tel" id="l_phone" required>
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" id="l_email" required>
+        </div>
+        <div class="form-group">
+          <label>ภาควิชาผู้ขอใช้ห้อง *</label>
+          <select id="l_dept" required>
+            <option value="">-- เลือกภาควิชา --</option>
+            <option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option>
+            <option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option>
+            <option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option>
+            <option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option>
+            <option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option>
+            <option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option>
+            <option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม</option>
+            <option value="ภาควิชาวิศวกรรมวัสดุและโลหการ">ภาควิชาวิศวกรรมวัสดุและโลหการ</option>
+            <option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option>
+            <option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>มีความประสงค์ขอใช้ห้องเพื่อ *</label>
+          <input type="text" id="l_purpose" required>
+        </div>
+        
+        <div class="form-group">
+          <label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label>
+          <select id="l_advisor" onchange="toggleLabAdvisor()" required>
+            <option value="">-- เลือกอาจารย์ --</option>
+            <option value="รศ.ดร.ไชยยันต์ ไชยยะ">รศ.ดร.ไชยยันต์ ไชยยะ</option>
+            <option value="รศ.ดร.ศศิรดี จันทสี">รศ.ดร.ศศิรดี จันทสี</option>
+            <option value="รศ.ดร.วีรินทร์ดา เมนส์">รศ.ดร.วีรินทร์ดา เมนส์</option>
+            <option value="รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย">รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย</option>
+            <option value="รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม">รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม</option>
+            <option value="ผศ.ดร.รินลดา สิริแสงสว่าง">ผศ.ดร.รินลดา สิริแสงสว่าง</option>
+            <option value="ผศ.ยรรยง สุขคล้าย">ผศ.ยรรยง สุขคล้าย</option>
+            <option value="รศ.ศราวุธ จิตต์พินิจ">รศ.ศราวุธ จิตต์พินิจ</option>
+            <option value="รศ.ดร.วีราภรณ์ ผิวสอาด">รศ.ดร.วีราภรณ์ ผิวสอาด</option>
+            <option value="ผศ.ดร.ชัยภพ ศิระวรกุล">ผศ.ดร.ชัยภพ ศิระวรกุล</option>
+            <option value="อาจารย์พุทธิพร เทียมสินสังวร">อาจารย์พุทธิพร เทียมสินสังวร</option>
+            <option value="อาจารย์นวพร เพิ่มสมบัติ">อาจารย์นวพร เพิ่มสมบัติ</option>
+            <option value="อื่นๆ">อื่นๆ</option>
+          </select>
+        </div>
+        <div id="l_other_advisor_div" class="form-group hidden">
+          <label>ระบุชื่ออาจารย์</label>
+          <input type="text" id="l_otherAdvisor">
+        </div>
+
+        <div class="form-group">
+          <label>ขอใช้ห้อง *</label>
+          <select id="l_room" required>
+            <option value="">-- เลือกห้อง --</option>
+            <option value="ห้องกิจกรรมนักศึกษา 101">ห้องกิจกรรมนักศึกษา 101</option>
+            <option value="ห้องแลป 103">ห้องแลป 103</option>
+            <option value="ห้องแลป 107">ห้องแลป 107</option>
+            <option value="ห้องแลป 108">ห้องแลป 108</option>
+            <option value="ห้องแลป 201">ห้องแลป 201</option>
+            <option value="ห้องแลป 202">ห้องแลป 202</option>
+            <option value="ห้องแลป 203">ห้องแลป 203</option>
+            <option value="ห้องแลป 204">ห้องแลป 204</option>
+            <option value="ห้องแลป 205">ห้องแลป 205</option>
+            <option value="ห้องแลป 208">ห้องแลป 208</option>
+            <option value="ห้องเรียน 301">ห้องเรียน 301</option>
+            <option value="ห้องพักนักศึกษา โท-เอก 302">ห้องพักนักศึกษา โท-เอก 302</option>
+            <option value="ห้องเรียน 303">ห้องเรียน 303</option>
+            <option value="ห้องประชุม 304">ห้องประชุม 304</option>
+            <option value="ห้องแลป 307">ห้องแลป 307</option>
+            <option value="ห้องเรียน 806">ห้องเรียน 806</option>
+            <option value="ห้องแลป 807">ห้องแลป 807</option>
+            <option value="ห้องแลป 808">ห้องแลป 808</option>
+            <option value="ห้องเรียน 809">ห้องเรียน 809</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>เลือกเวลา *</label>
+          <select id="l_timeSlot" required>
+            <option value="">-- เลือกระยะเวลา --</option>
+            <option value="ในเวลาราชการ">ในเวลาราชการ</option>
+            <option value="นอกเวลาราชการ">นอกเวลาราชการ</option>
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label>ในวันที่ ตั้งแต่ *</label>
+            <input type="datetime-local" id="l_fromDate" required>
+          </div>
+          <div class="form-group">
+            <label>ถึงวันที่ *</label>
+            <input type="datetime-local" id="l_toDate" required>
+          </div>
+        </div>
+        
+        <button type="submit" id="btnSubmitLab" class="btn-main" style="background-color: #9b59b6;"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอจองห้อง</button>
+      </form>
+      <div id="labSuccess" class="hidden" style="text-align: center; padding: 20px 0;">
+        <i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745;"></i>
+        <h3>ส่งคำขอเรียบร้อย!</h3><div id="showTicketId_LAB" style="font-weight: bold; font-size: 20px; margin-top: 10px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 3. Popup รวมไฟล์ PDF ================= -->
+  <div class="modal-overlay" id="pdfModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>ไฟล์เอกสารและแบบฟอร์ม (PDF)</h3>
+        <button class="close-modal" onclick="closeModal('pdfModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="pdf-list">
+        <div class="pdf-item">
+          <div><i class="fa-brands fa-google-drive" style="color: #ffc107; font-size: 20px; margin-right: 10px;"></i><b>ขอใช้ห้องปฏิบัติการ-เครื่องมือ-ครุภัณฑ์</b></div>
+          <a href="https://drive.google.com/file/d/1el2I5p2JLkAu34FZc5zia03GiWzZnJXA/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์</a>
+        </div>
+        <div class="pdf-item">
+          <div><i class="fa-brands fa-google-drive" style="color: #ffc107; font-size: 20px; margin-right: 10px;"></i><b>ใบยืมคืน-อุปกรณ์</b></div>
+          <a href="https://drive.google.com/file/d/10Kp-HFkjqO3K4sFjFAtMv7UJGmXoQfne/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 4. Popup ติดตามสถานะรวม ================= -->
+  <div class="modal-overlay" id="trackingModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>ติดตามสถานะคำร้อง</h3>
+        <button class="close-modal" onclick="closeModal('trackingModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="searchView">
+        <div class="search-section">
+          <input type="text" id="ticketInput" class="search-input" placeholder="กรอก Ticket ID (เช่น BW-xxxx หรือ LAB-xxxx)">
+          <button class="btn-search" onclick="fetchTicketData()"><i class="fa-solid fa-search"></i> ค้นหา</button>
+        </div>
+      </div>
+      
+      <!-- โซนแสดงผลเมื่อเป็นฟอร์มยืมอุปกรณ์ -->
+      <div id="borrowDetailView" class="hidden">
+        <h4 style="margin-bottom: 15px; color: #e67e22;"><i class="fa-solid fa-box-open"></i> ข้อมูลการยืมอุปกรณ์</h4>
+        <div class="detail-row"><span class="detail-label">รหัสอ้างอิง:</span> <span id="vb_id"></span></div>
+        <div class="detail-row"><span class="detail-label">ผู้ยืม:</span> <span id="vb_name"></span></div>
+        <div class="detail-row"><span class="detail-label">วิชา/โปรเจค:</span> <span id="vb_subject"></span></div>
+        <div class="detail-row"><span class="detail-label">รายการ:</span><br><span id="vb_equipments" style="white-space: pre-wrap; display: block; background: #f8f9fa; padding: 10px; border-radius: 6px; margin-top: 5px;"></span></div>
+        <div class="detail-row"><span class="detail-label">เวลาที่ยืม:</span> <span id="vb_borrow"></span></div>
+        <div class="detail-row"><span class="detail-label">กำหนดคืน:</span> <span id="vb_return"></span></div>
+        <div class="detail-row" style="margin-top: 15px;"><span class="detail-label">การอนุมัติ (อาจารย์):</span><br><span id="vb_advisor_status" class="status-badge"></span></div>
+        <div class="detail-row"><span class="detail-label">สถานะ (แอดมิน):</span><br><span id="vb_admin_status" class="status-badge"></span></div>
+      </div>
+
+      <!-- โซนแสดงผลเมื่อเป็นฟอร์มขอใช้ห้อง -->
+      <div id="labDetailView" class="hidden">
+        <h4 style="margin-bottom: 15px; color: #9b59b6;"><i class="fa-solid fa-flask"></i> ข้อมูลการขอใช้ห้องปฏิบัติการ</h4>
+        <div class="detail-row"><span class="detail-label">รหัสอ้างอิง:</span> <span id="vl_id"></span></div>
+        <div class="detail-row"><span class="detail-label">ผู้จอง:</span> <span id="vl_name"></span></div>
+        <div class="detail-row"><span class="detail-label">ห้องที่ขอใช้:</span> <span id="vl_room"></span></div>
+        <div class="detail-row"><span class="detail-label">ความประสงค์:</span> <span id="vl_purpose"></span></div>
+        <div class="detail-row"><span class="detail-label">เวลาจอง:</span> <span id="vl_slot"></span></div>
+        <div class="detail-row"><span class="detail-label">ตั้งแต่:</span> <span id="vl_from"></span></div>
+        <div class="detail-row"><span class="detail-label">ถึง:</span> <span id="vl_to"></span></div>
+        <div class="detail-row" style="margin-top: 15px;"><span class="detail-label">การอนุมัติ (อาจารย์):</span><br><span id="vl_advisor_status" class="status-badge"></span></div>
+        <div class="detail-row"><span class="detail-label">สถานะ (แอดมิน):</span><br><span id="vl_admin_status" class="status-badge"></span></div>
+      </div>
+
+      <button id="closeTrackBtn" class="btn-main hidden" style="background-color: #6c757d;" onclick="closeModal('trackingModal')">ปิดหน้าต่าง</button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwGPD0JQNHhQoAMkntpPHkAXJpvfx37U0cso1bDiAo1LEAk81mgEPZC3poKFGhLD69mGQ/exec"; 
+
+    // ระบบ Modal
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+      if(id === 'borrowModal') { document.getElementById('borrowForm').reset(); document.getElementById('borrowForm').classList.remove('hidden'); document.getElementById('borrowSuccess').classList.add('hidden'); toggleBorrowUserFields(); }
+      if(id === 'labModal') { document.getElementById('labForm').reset(); document.getElementById('labForm').classList.remove('hidden'); document.getElementById('labSuccess').classList.add('hidden'); toggleLabUserFields(); toggleLabAdvisor(); }
+    }
+    function openTrackingModal() {
+      document.getElementById('trackingModal').style.display = 'flex';
+      document.getElementById('searchView').classList.remove('hidden');
+      document.getElementById('borrowDetailView').classList.add('hidden');
+      document.getElementById('labDetailView').classList.add('hidden');
+      document.getElementById('closeTrackBtn').classList.add('hidden');
+    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // Toggle Fields ฝั่งยืมอุปกรณ์
+    function toggleBorrowUserFields() {
+      const val = document.getElementById('b_userType').value;
+      document.getElementById('b_student_fields').classList.toggle('hidden', val !== 'นักศึกษา ป.ตรี');
+      document.getElementById('b_other_user_div').classList.toggle('hidden', val !== 'อื่นๆ');
+    }
+
+    // Toggle Fields ฝั่งจองห้อง
+    function toggleLabUserFields() {
+      const val = document.getElementById('l_userType').value;
+      document.getElementById('l_student_fields').classList.toggle('hidden', val !== 'นักศึกษา ป.ตรี');
+      document.getElementById('l_other_user_div').classList.toggle('hidden', val !== 'อื่นๆ');
+    }
+    function toggleLabAdvisor() {
+      const val = document.getElementById('l_advisor').value;
+      document.getElementById('l_other_advisor_div').classList.toggle('hidden', val !== 'อื่นๆ');
+    }
+
+    // จัดการอุปกรณ์
+    function updateQty(btn, change) {
+      const display = btn.parentElement.querySelector('.qty-display');
+      let qty = parseInt(display.innerText);
+      qty = Math.max(1, qty + change);
+      display.innerText = qty;
+    }
+    function addEquipmentRow() {
+      const container = document.getElementById('equipContainer');
+      const row = document.createElement('div');
+      row.className = 'equip-row';
+      row.innerHTML = `
+        <input type="text" class="equip-name" placeholder="ระบุชื่ออุปกรณ์" required>
+        <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+        <span class="qty-display">1</span>
+        <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove()"><i class="fa-solid fa-trash"></i></button>
+      `;
+      container.appendChild(row);
+    }
+
+    function formatDate(raw) { return raw.replace('T', ' เวลา ') + ' น.'; }
+
+    // Submit ยืมอุปกรณ์
+    async function submitBorrowForm(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitBorrow');
+      btn.innerHTML = 'กำลังส่งข้อมูล...'; btn.disabled = true;
+
+      const equipmentList = Array.from(document.querySelectorAll('.equip-row')).map(row => {
+        const name = row.querySelector('.equip-name').value.trim();
+        return name ? `- ${name} (จำนวน ${row.querySelector('.qty-display').innerText})` : '';
+      }).filter(Boolean);
+
+      let uType = document.getElementById('b_userType').value;
+      if (uType === 'อื่นๆ') uType = document.getElementById('b_otherUser').value;
+
+      const formData = {
+        name: document.getElementById('b_name').value,
+        userType: uType,
+        studentId: document.getElementById('b_studentId').value,
+        year: document.getElementById('b_year').value,
+        section: document.getElementById('b_section').value,
+        phone: document.getElementById('b_phone').value,
+        email: document.getElementById('b_email').value,
+        purpose: document.getElementById('b_purpose').value,
+        subject: document.getElementById('b_subject').value,
+        advisor: document.getElementById('b_advisor').value,
+        equipments: equipmentList.join('\n'), 
+        borrowDate: formatDate(document.getElementById('b_borrowDate').value),
+        returnDate: formatDate(document.getElementById('b_returnDate').value)
+      };
+
+      try {
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "borrow", data: formData }) });
+        const result = await res.json();
+        if (result.success) {
+          document.getElementById('borrowForm').classList.add('hidden');
+          document.getElementById('borrowSuccess').classList.remove('hidden');
+          document.getElementById('showTicketId_BW').innerText = result.ticketId;
+        }
+      } catch (error) { alert("ล้มเหลว กรุณาลองใหม่"); } 
+      finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ส่งคำขอยืมอุปกรณ์'; btn.disabled = false; }
+    }
+
+    // Submit ขอใช้ห้อง
+    async function submitLabForm(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitLab');
+      btn.innerHTML = 'กำลังส่งข้อมูล...'; btn.disabled = true;
+
+      let uType = document.getElementById('l_userType').value;
+      if (uType === 'อื่นๆ') uType = document.getElementById('l_otherUser').value;
+      
+      let adv = document.getElementById('l_advisor').value;
+      if (adv === 'อื่นๆ') adv = document.getElementById('l_otherAdvisor').value;
+
+      const formData = {
+        name: document.getElementById('l_name').value,
+        userType: uType,
+        studentId: document.getElementById('l_studentId').value,
+        year: document.getElementById('l_year').value,
+        section: document.getElementById('l_section').value,
+        phone: document.getElementById('l_phone').value,
+        email: document.getElementById('l_email').value,
+        department: document.getElementById('l_dept').value,
+        purpose: document.getElementById('l_purpose').value,
+        advisor: adv,
+        room: document.getElementById('l_room').value,
+        timeSlot: document.getElementById('l_timeSlot').value,
+        fromDate: formatDate(document.getElementById('l_fromDate').value),
+        toDate: formatDate(document.getElementById('l_toDate').value)
+      };
+
+      try {
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "lab", data: formData }) });
+        const result = await res.json();
+        if (result.success) {
+          document.getElementById('labForm').classList.add('hidden');
+          document.getElementById('labSuccess').classList.remove('hidden');
+          document.getElementById('showTicketId_LAB').innerText = result.ticketId;
+        }
+      } catch (error) { alert("ล้มเหลว กรุณาลองใหม่"); } 
+      finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ส่งคำขอจองห้อง'; btn.disabled = false; }
+    }
+
+    // ติดตามสถานะ (รองรับ 2 ฟอร์ม)
+    async function fetchTicketData() {
+      const ticketId = document.getElementById('ticketInput').value.trim().toUpperCase();
+      if(!ticketId) return;
+      const btn = document.querySelector('.btn-search');
+      btn.innerHTML = 'รอ...'; btn.disabled = true;
+
+      try {
+        const res = await fetch(API_URL + "?id=" + encodeURIComponent(ticketId));
+        const data = await res.json();
+        
+        if (data.error) {
+          alert(data.error);
+        } else {
+          document.getElementById('searchView').classList.add('hidden');
+          document.getElementById('closeTrackBtn').classList.remove('hidden');
+
+          if (data.formType === "Borrow") {
+            document.getElementById('borrowDetailView').classList.remove('hidden');
+            document.getElementById('vb_id').innerText = data.id;
+            document.getElementById('vb_name').innerText = data.name;
+            document.getElementById('vb_subject').innerText = data.subject;
+            document.getElementById('vb_equipments').innerText = data.equipments;
+            document.getElementById('vb_borrow').innerText = data.borrowDate;
+            document.getElementById('vb_return').innerText = data.returnDate;
+            
+            setBadges('vb_advisor_status', data.advisor_status, 'vb_admin_status', data.admin_status, data.return_status);
+          } 
+          else if (data.formType === "Lab") {
+            document.getElementById('labDetailView').classList.remove('hidden');
+            document.getElementById('vl_id').innerText = data.id;
+            document.getElementById('vl_name').innerText = data.name;
+            document.getElementById('vl_room').innerText = data.room;
+            document.getElementById('vl_purpose').innerText = data.purpose;
+            document.getElementById('vl_slot').innerText = data.timeSlot;
+            document.getElementById('vl_from').innerText = data.fromDate;
+            document.getElementById('vl_to').innerText = data.toDate;
+            
+            setBadges('vl_advisor_status', data.advisor_status, 'vl_admin_status', data.admin_status, null);
+          }
+        }
+      } catch (err) { alert("เชื่อมต่อล้มเหลว"); }
+      btn.innerHTML = '<i class="fa-solid fa-search"></i> ค้นหา'; btn.disabled = false;
+    }
+
+    function setBadges(advId, advStatus, adminId, adminStatus, returnStatus) {
+      const advBadge = document.getElementById(advId);
+      advBadge.innerText = advStatus || "รอตรวจสอบ";
+      advBadge.style.backgroundColor = (advStatus === "อนุมัติแล้ว") ? "#28a745" : (advStatus === "ไม่อนุมัติ") ? "#dc3545" : "#ffc107";
+      
+      const adminBadge = document.getElementById(adminId);
+      let adminTxt = adminStatus || "รอตรวจสอบ";
+      if (returnStatus) adminTxt += " / " + returnStatus;
+      adminBadge.innerText = adminTxt;
+      adminBadge.style.backgroundColor = (adminStatus === "อนุมัติ" || adminStatus === "รับทราบ/จ่ายของแล้ว") ? "#28a745" : "#17a2b8";
+    }
+  </script>
 </body>
 </html>
