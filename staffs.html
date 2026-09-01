@@ -69,6 +69,15 @@
       gap: 8px;
     }
     .toast-notification.show { top: 20px; }
+    /* ========================================= */
+    /* โค้ดปรับขนาดสำหรับหน้าจอมือถือ (Responsive) */
+    /* ========================================= */
+    @media (max-width: 500px) {
+      /* ปรับหัวกระดาษและปุ่มกลับห้องแชต */
+      .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .header h1 { font-size: 18px; }
+      .back-btn { padding: 6px 12px; font-size: 12px; width: auto; align-self: flex-start; }
+    }
   </style>
 </head>
 <body>
