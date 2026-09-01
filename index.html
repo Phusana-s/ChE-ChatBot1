@@ -2,13 +2,27 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>LINE Chatbot UI - Full Menu Integrated</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-    body { background-color: #7494c0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    
+    /* --- แก้ไขเรื่องความสูงหน้าจอแบบไดนามิก --- */
+    html, body { 
+      margin: 0; 
+      padding: 0; 
+      height: 100%; 
+      height: 100dvh; 
+    }
+    
+    body { 
+      background-color: #7494c0; 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+    }
 
     /* --- 1. พื้นที่ห้องแชต --- */
     .chat-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
@@ -30,7 +44,16 @@
     .user-bubble { background-color: #8ce28a; padding: 10px 14px; border-radius: 15px; border-top-right-radius: 2px; font-size: 15px; color: #333; max-width: 85%; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 
     /* --- ส่วนควบคุมด้านล่าง --- */
-    .bottom-controls-wrapper { background-color: #ffffff; border-top: 1px solid #ddd; display: flex; flex-direction: column; width: 100%; }
+    /* --- แก้ไขเพิ่ม Safe Area สำหรับขอบจอล่าง --- */
+    .bottom-controls-wrapper { 
+      background-color: #ffffff; 
+      border-top: 1px solid #ddd; 
+      display: flex; 
+      flex-direction: column; 
+      width: 100%; 
+      padding-bottom: env(safe-area-inset-bottom); 
+    }
+    
     .input-container { display: flex; align-items: center; padding: 10px; gap: 10px; background-color: #ffffff; }
     .toggle-menu-btn { background-color: #f4f4f4; color: #555; border: 1px solid #ccc; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
     .chat-input { flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; font-size: 15px; outline: none; background-color: #f9f9f9; }
@@ -79,12 +102,9 @@
       <a href="knowledge.html" class="menu-item">
         <i class="fa-solid fa-flask" style="color: #16a085;"></i><span style="color: #16a085;">คู่มือการใช้งานอุปกรณ์</span>
       </a>
-      
-      <!-- แก้ไขปุ่มแจ้งซ่อมให้ลิงก์ไปยัง Maintenance.html -->
       <a href="Maintenance.html" class="menu-item">
         <i class="fa-solid fa-screwdriver-wrench" style="color: #dc3545;"></i><span style="color: #dc3545;">แจ้งซ่อม</span>
       </a>
-      
       <a href="staffs.html" class="menu-item">
         <i class="fa-regular fa-comments" style="color: #3498db;"></i><span style="color: #3498db;">ติดต่อเจ้าหน้าที่</span>
       </a>
