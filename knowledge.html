@@ -29,6 +29,19 @@
     .open-btn { background: #1e7e34; color: white; text-decoration: none; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s; }
     .open-btn:hover { background: #155d25; }
     .open-btn i.fa-google-drive { color: #ffc107; }
+    /* ========================================= */
+    /* โค้ดปรับขนาดสำหรับหน้าจอมือถือ (Responsive) */
+    /* ========================================= */
+    @media (max-width: 500px) {
+      /* ปรับหัวกระดาษและปุ่มกลับห้องแชต */
+      .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .header h1 { font-size: 18px; }
+      .back-btn { padding: 6px 12px; font-size: 12px; width: auto; align-self: flex-start; }
+      
+      /* ปรับกล่องรายการไฟล์และปุ่มเปิดไฟล์/ดาวน์โหลด */
+      .file-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+      .download-btn, .open-btn { width: 100%; justify-content: center; padding: 10px; font-size: 12px; }
+    }
   </style>
 </head>
 <body>
