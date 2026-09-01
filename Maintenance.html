@@ -363,19 +363,19 @@
 
       if (statusText === "Confirmed") { 
         badgeColor = "#007bff"; 
-        displayText = "Confirmed : เจ้าหน้าที่รับทราบเรื่องแล้ว"; 
+        displayText = "Confirmed"; 
       }
       else if (statusText === "In Progress") { 
         badgeColor = "#ffc107"; 
-        displayText = "In Progress : อยู่ระหว่างดำเนินการ"; 
+        displayText = "In Progress"; 
       }
       else if (statusText === "Completed") { 
         badgeColor = "#28a745"; 
-        displayText = "Completed : ดำเนินการซ่อมเรียบร้อยแล้ว"; 
+        displayText = "Completed"; 
       }
       else if (statusText === "Unable to Repair") { 
         badgeColor = "#dc3545"; 
-        displayText = "Unable to Repair : ไม่สามารถดำเนินการซ่อมได้"; 
+        displayText = "Unable to Repair"; 
       }
       
       badge.innerText = displayText;
