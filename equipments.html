@@ -181,8 +181,8 @@
           <div class="form-group"><label>กำหนดคืน (เวลา) *</label><input type="datetime-local" id="b_returnDate" required></div>
         </div>
         
-        <!-- แนบรูป -->
-        <div class="form-group">
+        <!-- แนบรูป (แสดงเมื่อเลือกอาจารย์ "อื่นๆ") -->
+        <div id="b_evidence_div" class="form-group hidden">
           <label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (ถ้ามี)</label>
           <input type="file" id="b_evidenceFile" accept="image/*">
         </div>
@@ -258,8 +258,8 @@
           <div class="form-group"><label>ถึงวันที่ *</label><input type="datetime-local" id="l_toDate" required></div>
         </div>
 
-        <!-- แนบรูป -->
-        <div class="form-group">
+        <!-- แนบรูป (แสดงเมื่อเลือกอาจารย์ "อื่นๆ") -->
+        <div id="l_evidence_div" class="form-group hidden">
           <label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (ถ้ามี)</label>
           <input type="file" id="l_evidenceFile" accept="image/*">
         </div>
@@ -318,7 +318,6 @@
   </div>
 
   <script>
-    // ใส่ API_URL ตัวล่าสุดหลังจากกด Deploy เป็น New Version
     const API_URL = "https://script.google.com/macros/s/AKfycbx6xXWW9IZpEwtYgSwhqmUfqgMPVBciXFQK0_6o33I6ECgKlFo5vF-hcc8_UWYst2C88g/exec"; 
 
     function openModal(id) {
@@ -336,9 +335,22 @@
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     function toggleBorrowUserFields() { const val = document.getElementById('b_userType').value; document.getElementById('b_student_fields').classList.toggle('hidden', val !== 'นักศึกษา ป.ตรี'); document.getElementById('b_other_user_div').classList.toggle('hidden', val !== 'อื่นๆ'); }
-    function toggleBorrowAdvisor() { const val = document.getElementById('b_advisor').value; document.getElementById('b_other_advisor_div').classList.toggle('hidden', val !== 'อื่นๆ'); }
+    
+    // ฟังก์ชันจัดการช่องแนบรูปฝั่งยืมอุปกรณ์
+    function toggleBorrowAdvisor() { 
+      const val = document.getElementById('b_advisor').value; 
+      document.getElementById('b_other_advisor_div').classList.toggle('hidden', val !== 'อื่นๆ'); 
+      document.getElementById('b_evidence_div').classList.toggle('hidden', val !== 'อื่นๆ');
+    }
+    
     function toggleLabUserFields() { const val = document.getElementById('l_userType').value; document.getElementById('l_student_fields').classList.toggle('hidden', val !== 'นักศึกษา ป.ตรี'); document.getElementById('l_other_user_div').classList.toggle('hidden', val !== 'อื่นๆ'); }
-    function toggleLabAdvisor() { const val = document.getElementById('l_advisor').value; document.getElementById('l_other_advisor_div').classList.toggle('hidden', val !== 'อื่นๆ'); }
+    
+    // ฟังก์ชันจัดการช่องแนบรูปฝั่งขอใช้ห้อง
+    function toggleLabAdvisor() { 
+      const val = document.getElementById('l_advisor').value; 
+      document.getElementById('l_other_advisor_div').classList.toggle('hidden', val !== 'อื่นๆ'); 
+      document.getElementById('l_evidence_div').classList.toggle('hidden', val !== 'อื่นๆ');
+    }
 
     function updateQty(btn, change) { const display = btn.parentElement.querySelector('.qty-display'); let qty = parseInt(display.innerText); qty = Math.max(1, qty + change); display.innerText = qty; }
     function addEquipmentRow() {
@@ -371,7 +383,7 @@
 
       let fileBase64 = "", mimeType = "", fileName = "";
       const fileInput = document.getElementById('b_evidenceFile');
-      if (fileInput.files.length > 0) {
+      if (fileInput.files.length > 0 && !document.getElementById('b_evidence_div').classList.contains('hidden')) {
         const file = fileInput.files[0];
         fileBase64 = await getBase64(file);
         mimeType = file.type;
@@ -401,7 +413,7 @@
 
       let fileBase64 = "", mimeType = "", fileName = "";
       const fileInput = document.getElementById('l_evidenceFile');
-      if (fileInput.files.length > 0) {
+      if (fileInput.files.length > 0 && !document.getElementById('l_evidence_div').classList.contains('hidden')) {
         const file = fileInput.files[0];
         fileBase64 = await getBase64(file);
         mimeType = file.type;
