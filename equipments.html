@@ -682,15 +682,74 @@
     }
 
     function setBadges(advId, advStatus, adminId, adminStatus, returnStatus) {
+      // ==========================================
+      // 1. จัดการป้ายสถานะของอาจารย์
+      // ==========================================
       const advBadge = document.getElementById(advId);
-      advBadge.innerText = advStatus || "รอตรวจสอบ";
-      advBadge.style.backgroundColor = (advStatus === "อนุมัติแล้ว") ? "#28a745" : (advStatus === "ไม่อนุมัติ") ? "#dc3545" : "#ffc107";
+      const currentAdv = advStatus || "รอตรวจสอบ";
+      advBadge.innerText = currentAdv;
       
+      if (currentAdv === "อนุมัติ" || currentAdv === "อนุมัติแล้ว") {
+        advBadge.style.backgroundColor = "#28a745"; // สีเขียว
+        advBadge.style.color = "#ffffff";
+      } else if (currentAdv === "ไม่อนุมัติ") {
+        advBadge.style.backgroundColor = "#dc3545"; // สีแดง
+        advBadge.style.color = "#ffffff";
+      } else {
+        advBadge.style.backgroundColor = "#ffc107"; // สีเหลือง
+        advBadge.style.color = "#212529";
+      }
+      
+      // ==========================================
+      // 2. จัดการป้ายสถานะของแอดมิน
+      // ==========================================
       const adminBadge = document.getElementById(adminId);
-      let adminTxt = adminStatus || "รอตรวจสอบ";
-      if (returnStatus) adminTxt += " / " + returnStatus;
-      adminBadge.innerText = adminTxt;
-      adminBadge.style.backgroundColor = (adminStatus === "อนุมัติ" || adminStatus === "รับทราบ/จ่ายของแล้ว") ? "#28a745" : "#17a2b8";
+      const currentAdmin = adminStatus || "รอตรวจสอบ";
+      
+      // รีเซ็ต padding สำหรับกรณีสถานะอื่นๆ เผื่อถูกค้นหาซ้ำ
+      adminBadge.style.padding = "4px 10px";
+      
+      if (currentAdmin === "รอตรวจสอบ") {
+        adminBadge.innerHTML = "รอตรวจสอบ";
+        adminBadge.style.backgroundColor = "#ffc107"; // สีเหลือง
+        adminBadge.style.color = "#212529";
+      } 
+      else if (currentAdmin === "อนุมัติ") {
+        adminBadge.innerHTML = "อนุมัติ";
+        adminBadge.style.backgroundColor = "#007bff"; // สีน้ำเงิน
+        adminBadge.style.color = "#ffffff";
+      } 
+      else if (currentAdmin === "ไม่อนุมัติ") {
+        adminBadge.innerHTML = "ไม่อนุมัติ";
+        adminBadge.style.backgroundColor = "#dc3545"; // สีแดง
+        adminBadge.style.color = "#ffffff";
+      } 
+      else if (currentAdmin === "รับทราบ/จ่ายของแล้ว") {
+        
+        if (returnStatus === "ยังไม่คืน") {
+          // หากยังไม่คืน: แบ่งเป็น 2 ป้าย (เขียว และ แดง)
+          adminBadge.innerHTML = '<span style="background-color: #28a745; color: white; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-right: 5px;">รับทราบ/จ่ายของแล้ว</span><span style="background-color: #dc3545; color: white; padding: 4px 10px; border-radius: 20px; display: inline-block;">ยังไม่คืน</span>';
+          adminBadge.style.backgroundColor = "transparent"; // ซ่อนสีพื้นหลังกล่องหลัก
+          adminBadge.style.padding = "0"; // ลบขอบกล่องหลักทิ้ง
+        } else if (returnStatus) {
+          // หากคืนแล้ว: ให้เป็นสีเขียวทั้งหมด
+          adminBadge.innerHTML = "รับทราบ/จ่ายของแล้ว / " + returnStatus;
+          adminBadge.style.backgroundColor = "#28a745"; // สีเขียว
+          adminBadge.style.color = "#ffffff";
+        } else {
+          // กรณีเพิ่งจ่ายของ แต่ยังไม่มีสถานะการคืน
+          adminBadge.innerHTML = "รับทราบ/จ่ายของแล้ว";
+          adminBadge.style.backgroundColor = "#28a745"; 
+          adminBadge.style.color = "#ffffff";
+        }
+        
+      } 
+      else {
+        // กรณีป้องกันบัคอื่นๆ
+        adminBadge.innerHTML = currentAdmin;
+        adminBadge.style.backgroundColor = "#6c757d"; 
+        adminBadge.style.color = "#ffffff";
+      }
     }
   </script>
 </body>
