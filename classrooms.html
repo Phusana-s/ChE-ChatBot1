@@ -89,7 +89,6 @@
     </div>
 
     <div class="file-grid">
-      <!-- 1. ปฏิทินการจอง -->
       <div class="file-card" onclick="openCalendarModal()">
         <div class="file-info">
           <i class="fa-solid fa-calendar-alt action-icon icon-calendar"></i>
@@ -97,8 +96,6 @@
         </div>
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
-
-      <!-- 2. แบบฟอร์มขอใช้ห้องเรียน -->
       <div class="file-card" onclick="openModal('roomModal')">
         <div class="file-info">
           <i class="fa-solid fa-chalkboard-user action-icon icon-room"></i>
@@ -106,8 +103,6 @@
         </div>
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
-      
-      <!-- 3. แบบฟอร์มขอสแกนนิ้ว -->
       <div class="file-card" onclick="openModal('scanModal')">
         <div class="file-info">
           <i class="fa-solid fa-fingerprint action-icon icon-scan"></i>
@@ -115,8 +110,6 @@
         </div>
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
-
-      <!-- 4. ติดตามสถานะ -->
       <div class="file-card" onclick="openTrackingModal()">
         <div class="file-info">
           <i class="fa-solid fa-magnifying-glass-chart action-icon icon-track"></i>
@@ -124,8 +117,6 @@
         </div>
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
-
-      <!-- 5. รวมลิงก์ไฟล์ PDF -->
       <div class="file-card" onclick="openModal('pdfModal')">
         <div class="file-info">
           <i class="fa-solid fa-file-pdf action-icon icon-pdf"></i>
@@ -161,7 +152,6 @@
         <div id="calendarLoading" style="text-align: center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</div>
         <div id="calendarGrid" class="calendar-grid hidden">
           <div class="cal-header">อา.</div><div class="cal-header">จ.</div><div class="cal-header">อ.</div><div class="cal-header">พ.</div><div class="cal-header">พฤ.</div><div class="cal-header">ศ.</div><div class="cal-header">ส.</div>
-          <!-- Grid content generated via JS -->
         </div>
         <div style="margin-top: 15px; font-size: 11px; color: #64748b; display: flex; gap: 10px; flex-wrap: wrap;">
           <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #3b82f6;"></div> เต็มวัน</span>
@@ -241,7 +231,6 @@
         <div id="s_other_user_div" class="form-group hidden"><label>โปรดระบุสถานะ</label><input type="text" id="s_otherUser"></div>
         <div class="form-group"><label>เบอร์โทรศัพท์ *</label><input type="tel" id="s_phone" required></div>
         <div class="form-group"><label>Email *</label><input type="email" id="s_email" required></div>
-        
         <div id="s_dept_faculty_div" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="hidden">
           <div class="form-group">
             <label>คณะ *</label>
@@ -249,11 +238,10 @@
           </div>
           <div class="form-group">
             <label>ภาควิชา *</label>
-            <select id="s_dept"><option value="">-- เลือกภาควิชา --</option><option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option><option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option><option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option><option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option><option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option><option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option><option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม</option><option value="ภาควิชาวิศวกรรมวัสดุและโลหการ">ภาควิชาวิศวกรรมวัสดุและโลหการ</option><option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option><option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option></select>
+            <select id="s_dept"><option value="">-- เลือกภาควิชา --</option><option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option><option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option><option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option><option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option><option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option><option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option><option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมวัสดุและโลหการ</option><option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option><option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option></select>
           </div>
         </div>
         <div class="form-group"><label>วัตถุประสงค์เพื่อ *</label><input type="text" id="s_purpose" required></div>
-        
         <div id="s_advisor_container" class="hidden">
           <div class="form-group">
             <label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label>
@@ -261,7 +249,6 @@
           </div>
           <div id="s_other_advisor_div" class="form-group hidden"><label>ระบุชื่ออาจารย์</label><input type="text" id="s_otherAdvisor"></div>
         </div>
-        
         <div class="form-group">
           <label>มีความประสงค์ขอสแกนลายนิ้วมือ (เลือกได้มากกว่า 1 ข้อ) *</label>
           <div class="checkbox-group">
@@ -325,7 +312,7 @@
 
   <script>
     // ⚠️ ต้องวาง URL ของ Web App ใหม่ที่นี่
-    const API_URL = "https://script.google.com/macros/s/AKfycbwGdBVo8qYjDg1xObvINUt-KJCfr-0bVNZFJ74czq7bfHitL3c-ct2U7hkjCktQ5L7x/exec"; 
+    const API_URL = "วาง_URL_WEB_APP_ใหม่ที่นี่"; 
 
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
@@ -341,16 +328,13 @@
     }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // Toggle Fields
     function toggleScanUserFields() { 
       const val = document.getElementById('s_userType').value; 
       document.getElementById('s_student_fields').classList.toggle('hidden', val !== 'นักศึกษา ป.ตรี'); 
       document.getElementById('s_other_user_div').classList.toggle('hidden', val !== 'อื่นๆ'); 
-      
       const showDeptFac = val !== 'อื่นๆ' && val !== '';
       document.getElementById('s_dept_faculty_div').classList.toggle('hidden', !showDeptFac);
       document.getElementById('s_faculty').required = showDeptFac; document.getElementById('s_dept').required = showDeptFac;
-      
       const reqAdvisor = ['นักศึกษา ป.ตรี', 'นักศึกษา ป.โท', 'นักศึกษา ป.เอก', 'ผู้ช่วยนักวิจัย'].includes(val);
       document.getElementById('s_advisor_container').classList.toggle('hidden', !reqAdvisor);
       document.getElementById('s_advisor').required = reqAdvisor;
@@ -376,13 +360,11 @@
       });
     }
 
-    // Submit สแกนนิ้ว
     async function submitScanForm(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmitScan'); 
       const doors = Array.from(document.querySelectorAll('input[name="s_doors"]:checked')).map(cb => "- " + cb.value).join('\n');
       if(!doors) { alert("กรุณาเลือกประตูลายนิ้วมืออย่างน้อย 1 บาน"); return; }
-      
       btn.innerHTML = 'กำลังส่งข้อมูล...'; btn.disabled = true;
 
       let uType = document.getElementById('s_userType').value; if (uType === 'อื่นๆ') uType = document.getElementById('s_otherUser').value;
@@ -410,7 +392,6 @@
       } catch (error) { alert("ล้มเหลว กรุณาลองใหม่"); } finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ส่งคำขอสแกนนิ้ว'; btn.disabled = false; }
     }
 
-    // Submit ขอห้องเรียน
     async function submitRoomForm(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmitRoom'); btn.innerHTML = 'กำลังส่งข้อมูล...'; btn.disabled = true;
@@ -437,7 +418,6 @@
       } catch (error) { alert("ล้มเหลว กรุณาลองใหม่"); } finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ส่งคำขอจองห้อง'; btn.disabled = false; }
     }
 
-    // ติดตามสถานะ
     async function fetchTicketData() {
       const ticketId = document.getElementById('ticketInput').value.trim().toUpperCase();
       if(!ticketId) return;
@@ -486,17 +466,11 @@
       document.getElementById('calendarModal').style.display = 'flex';
       document.getElementById('calendarGrid').classList.add('hidden');
       document.getElementById('calendarLoading').style.display = 'block';
-      
       try {
         const res = await fetch(API_URL + "?action=calendar");
         const data = await res.json();
-        if (data.success) {
-          calendarEvents = data.events;
-        }
-      } catch (e) {
-        console.error("Calendar Load Error", e);
-      }
-      
+        if (data.success) { calendarEvents = data.events; }
+      } catch (e) { console.error("Calendar Load Error", e); }
       document.getElementById('calendarLoading').style.display = 'none';
       document.getElementById('calendarGrid').classList.remove('hidden');
       renderCalendar();
@@ -505,6 +479,11 @@
     function changeMonth(step) {
       currentDate.setMonth(currentDate.getMonth() + step);
       renderCalendar();
+    }
+
+    function extractTime(str) {
+      const parts = str.split(' เวลา ');
+      return parts.length > 1 ? parts[1].replace(' น.', '') : '';
     }
 
     function parseTimeStr(str) {
@@ -517,14 +496,11 @@
 
     function getEventClass(fromStr, toStr, timeSlot) {
       if (timeSlot === "นอกเวลาราชการ") return "event-outside";
-      
       const from = parseTimeStr(fromStr);
       const to = parseTimeStr(toStr);
-      
       if (from.hour >= 16.30) return "event-outside";
       if (to.hour <= 12.30) return "event-morning"; // เช้า
       if (from.hour >= 12.00) return "event-afternoon"; // บ่าย
-      
       return "event-full"; // เต็มวัน
     }
 
@@ -535,9 +511,7 @@
       
       document.getElementById('monthYearDisplay').innerText = `${thaiMonths[month]} ${year + 543}`;
       
-      // ดึงค่าห้องเรียนที่ถูกเลือกจาก Dropdown
       const selectedRoom = document.getElementById('calendarRoomFilter').value;
-      
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       
@@ -570,8 +544,13 @@
             const evClass = getEventClass(ev.from, ev.to, ev.timeSlot);
             const evDiv = document.createElement('div');
             evDiv.className = `cal-event ${evClass}`;
-            evDiv.innerHTML = `<b>${ev.room}</b><br>${ev.name}`;
+            
+            // ปรับแก้ข้อมูลที่แสดงผล 1. ห้องเรียน 2. Ticket ID 3. เวลา
+            const startTime = extractTime(ev.from);
+            const endTime = extractTime(ev.to);
+            evDiv.innerHTML = `<b>${ev.room}</b><br>${ev.id}<br>${startTime} - ${endTime}`;
             evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nห้อง: ${ev.room}\nเวลา: ${ev.from} - ${ev.to}`;
+            
             dayDiv.appendChild(evDiv);
           }
         });
