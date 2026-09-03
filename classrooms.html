@@ -55,28 +55,41 @@
     .checkbox-group label { font-weight: normal; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0; }
     .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
 
-    /* Calendar Styles */
-    .calendar-container { max-width: 100%; overflow-x: auto; }
+    /* =======================================
+       Calendar Styles (Unified PC & Mobile)
+       ======================================= */
+    .calendar-container { max-width: 100%; overflow-x: hidden; }
     .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
     .calendar-controls button { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(80px, 1fr)); gap: 4px; }
-    .cal-header { font-weight: bold; text-align: center; background: #e2e8f0; padding: 8px 0; font-size: 13px; border-radius: 4px; }
-    .cal-day { min-height: 90px; border: 1px solid #e2e8f0; padding: 4px; border-radius: 4px; background: #fff; display: flex; flex-direction: column; gap: 4px; }
-    .cal-date { text-align: right; font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 4px; }
-    .cal-event { font-size: 11px; padding: 4px 6px; border-radius: 4px; line-height: 1.3; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     
-    /* Event Color Logic */
-    .event-full { background-color: #3b82f6; color: white; border: 1px solid #2563eb; }
-    .event-outside { background-color: #22c55e; color: white; border: 1px solid #16a34a; }
-    .event-morning { background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border-left: 3px solid #2563eb; border-top: 3px solid #2563eb; color: #0f172a; }
-    .event-afternoon { background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border-right: 3px solid #2563eb; border-bottom: 3px solid #2563eb; color: #0f172a; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-header { font-weight: bold; text-align: center; background: #e2e8f0; padding: 8px 0; font-size: 13px; border-radius: 4px; }
+    .cal-day { min-height: 70px; border: 1px solid #e2e8f0; padding: 4px; border-radius: 4px; background: #fff; display: flex; flex-direction: column; }
+    .cal-date { text-align: center; font-size: 13px; font-weight: bold; color: #64748b; margin-bottom: 4px; background: #f1f5f9; border-radius: 4px; padding: 2px 0; }
+    
+    .cal-event-dot-wrapper { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 4px; }
+    .cal-event { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+    
+    .event-full { background-color: #3b82f6; border: 1px solid #2563eb; }
+    .event-outside { background-color: #22c55e; border: 1px solid #16a34a; }
+    .event-morning { background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border: 1px solid #2563eb; }
+    .event-afternoon { background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border: 1px solid #2563eb; }
 
-    @media (max-width: 500px) {
+    .event-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; border-top: 2px solid #e2e8f0; padding-top: 20px; }
+    .event-card { padding: 15px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+
+    @media (max-width: 600px) {
       .header { flex-direction: column; align-items: flex-start; gap: 12px; }
       .back-btn { padding: 6px 12px; font-size: 12px; align-self: flex-start; }
       .pdf-item { flex-direction: column; gap: 10px; align-items: flex-start; }
       .download-btn { width: 100%; justify-content: center; }
-      .cal-day { min-height: 70px; }
+      
+      .calendar-grid { gap: 2px; }
+      .cal-header { font-size: 10px; padding: 4px 0; }
+      .cal-day { min-height: 45px; padding: 2px; }
+      .cal-date { font-size: 11px; padding: 2px; }
+      .cal-event { width: 8px; height: 8px; margin: 1px; }
+      .cal-event-dot-wrapper { gap: 2px; padding-top: 2px; }
     }
   </style>
 </head>
@@ -89,6 +102,7 @@
     </div>
 
     <div class="file-grid">
+      <!-- 1. ปฏิทิน -->
       <div class="file-card" onclick="openCalendarModal()">
         <div class="file-info">
           <i class="fa-solid fa-calendar-alt action-icon icon-calendar"></i>
@@ -96,6 +110,8 @@
         </div>
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
+
+      <!-- 2. แบบฟอร์มขอใช้ห้องเรียน -->
       <div class="file-card" onclick="openModal('roomModal')">
         <div class="file-info">
           <i class="fa-solid fa-chalkboard-user action-icon icon-room"></i>
@@ -103,6 +119,8 @@
         </div>
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
+      
+      <!-- 3. แบบฟอร์มขอสแกนนิ้ว -->
       <div class="file-card" onclick="openModal('scanModal')">
         <div class="file-info">
           <i class="fa-solid fa-fingerprint action-icon icon-scan"></i>
@@ -110,6 +128,8 @@
         </div>
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
+
+      <!-- 4. ติดตามสถานะ -->
       <div class="file-card" onclick="openTrackingModal()">
         <div class="file-info">
           <i class="fa-solid fa-magnifying-glass-chart action-icon icon-track"></i>
@@ -117,6 +137,8 @@
         </div>
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
+
+      <!-- 5. รวมลิงก์ไฟล์ PDF -->
       <div class="file-card" onclick="openModal('pdfModal')">
         <div class="file-info">
           <i class="fa-solid fa-file-pdf action-icon icon-pdf"></i>
@@ -136,10 +158,10 @@
       </div>
       <div class="calendar-container">
         <div class="calendar-controls">
-          <button onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i> เดือนก่อนหน้า</button>
+          <button onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
           <div style="text-align: center;">
             <h4 id="monthYearDisplay" style="margin: 0 0 5px 0;"></h4>
-            <select id="calendarRoomFilter" onchange="renderCalendar()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; cursor: pointer;">
+            <select id="calendarRoomFilter" onchange="renderCalendar()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; cursor: pointer; max-width: 200px;">
               <option value="all">ดูทุกห้องเรียน</option>
               <option value="ห้องเรียน 301">ห้องเรียน 301</option>
               <option value="ห้องเรียน 303">ห้องเรียน 303</option>
@@ -147,18 +169,21 @@
               <option value="ห้องเรียน 809">ห้องเรียน 809</option>
             </select>
           </div>
-          <button onclick="changeMonth(1)">เดือนถัดไป <i class="fa-solid fa-chevron-right"></i></button>
+          <button onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
         <div id="calendarLoading" style="text-align: center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</div>
-        <div id="calendarGrid" class="calendar-grid hidden">
-          <div class="cal-header">อา.</div><div class="cal-header">จ.</div><div class="cal-header">อ.</div><div class="cal-header">พ.</div><div class="cal-header">พฤ.</div><div class="cal-header">ศ.</div><div class="cal-header">ส.</div>
-        </div>
-        <div style="margin-top: 15px; font-size: 11px; color: #64748b; display: flex; gap: 10px; flex-wrap: wrap;">
+        
+        <div id="calendarGrid" class="calendar-grid hidden"></div>
+        
+        <div style="margin-top: 15px; font-size: 11px; color: #64748b; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
           <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #3b82f6;"></div> เต็มวัน</span>
           <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border: 1px solid #2563eb;"></div> ครึ่งเช้า</span>
           <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border: 1px solid #2563eb;"></div> ครึ่งบ่าย</span>
           <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #22c55e;"></div> นอกเวลา</span>
         </div>
+        
+        <!-- แถบการ์ดรายละเอียดด้านล่าง -->
+        <div id="eventListContainer" class="event-list-container"></div>
       </div>
     </div>
   </div>
@@ -204,7 +229,7 @@
           <div class="form-group"><label>ในวันที่ ตั้งแต่ *</label><input type="datetime-local" id="r_fromDate" required></div>
           <div class="form-group"><label>ถึงวันที่ *</label><input type="datetime-local" id="r_toDate" required></div>
         </div>
-        <div id="r_evidence_div" class="form-group hidden"><label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (ถ้ามี)</label><input type="file" id="r_evidenceFile" accept="image/*"></div>
+        <div id="r_evidence_div" class="form-group hidden"><label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (หนังสือบันทึกข้อความ)</label><input type="file" id="r_evidenceFile" accept="image/*"></div>
         <button type="submit" id="btnSubmitRoom" class="btn-main"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอจองห้อง</button>
       </form>
       <div id="roomSuccess" class="hidden" style="text-align: center; padding: 20px 0;"><i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745;"></i><h3>ส่งคำขอเรียบร้อย!</h3><div id="showTicketId_ROOM" style="font-weight: bold; font-size: 20px; margin-top: 10px;"></div></div>
@@ -238,7 +263,7 @@
           </div>
           <div class="form-group">
             <label>ภาควิชา *</label>
-            <select id="s_dept"><option value="">-- เลือกภาควิชา --</option><option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option><option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option><option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option><option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option><option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option><option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option><option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมวัสดุและโลหการ</option><option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option><option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option></select>
+            <select id="s_dept"><option value="">-- เลือกภาควิชา --</option><option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option><option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option><option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option><option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option><option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option><option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option><option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม</option><option value="ภาควิชาวิศวกรรมวัสดุและโลหการ">ภาควิชาวิศวกรรมวัสดุและโลหการ</option><option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option><option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option></select>
           </div>
         </div>
         <div class="form-group"><label>วัตถุประสงค์เพื่อ *</label><input type="text" id="s_purpose" required></div>
@@ -258,14 +283,14 @@
             <label><input type="checkbox" name="s_doors" value="ห้องปฏิบัติการ ChE 107 ประตู 2"> ห้องปฏิบัติการ ChE 107 ประตู 2</label>
           </div>
         </div>
-        <div id="s_evidence_div" class="form-group hidden"><label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (ถ้ามี)</label><input type="file" id="s_evidenceFile" accept="image/*"></div>
+        <div id="s_evidence_div" class="form-group hidden"><label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (หนังสือบันทึกข้อความ)</label><input type="file" id="s_evidenceFile" accept="image/*"></div>
         <button type="submit" id="btnSubmitScan" class="btn-main" style="background-color: #e67e22;"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอสแกนนิ้ว</button>
       </form>
       <div id="scanSuccess" class="hidden" style="text-align: center; padding: 20px 0;"><i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745;"></i><h3>ส่งคำขอเรียบร้อย!</h3><div id="showTicketId_SCAN" style="font-weight: bold; font-size: 20px; margin-top: 10px;"></div></div>
     </div>
   </div>
 
-  <!-- ================= 3. Popup รวมไฟล์ PDF ================= -->
+  <!-- ================= Popup PDF ================= -->
   <div class="modal-overlay" id="pdfModal">
     <div class="modal-box">
       <div class="modal-header"><h3>ไฟล์เอกสารและแบบฟอร์ม (PDF)</h3><button class="close-modal" onclick="closeModal('pdfModal')"><i class="fa-solid fa-xmark"></i></button></div>
@@ -276,7 +301,7 @@
     </div>
   </div>
 
-  <!-- ================= 4. Popup ติดตามสถานะ ================= -->
+  <!-- ================= Popup ติดตามสถานะ ================= -->
   <div class="modal-overlay" id="trackingModal">
     <div class="modal-box">
       <div class="modal-header"><h3>ติดตามสถานะคำร้อง</h3><button class="close-modal" onclick="closeModal('trackingModal')"><i class="fa-solid fa-xmark"></i></button></div>
@@ -312,7 +337,7 @@
 
   <script>
     // ⚠️ ต้องวาง URL ของ Web App ใหม่ที่นี่
-    const API_URL = "https://script.google.com/macros/s/AKfycbwGdBVo8qYjDg1xObvINUt-KJCfr-0bVNZFJ74czq7bfHitL3c-ct2U7hkjCktQ5L7x/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbx6xXWW9IZpEwtYgSwhqmUfqgMPVBciXFQK0_6o33I6ECgKlFo5vF-hcc8_UWYst2C88g/exec"; 
 
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
@@ -365,6 +390,7 @@
       const btn = document.getElementById('btnSubmitScan'); 
       const doors = Array.from(document.querySelectorAll('input[name="s_doors"]:checked')).map(cb => "- " + cb.value).join('\n');
       if(!doors) { alert("กรุณาเลือกประตูลายนิ้วมืออย่างน้อย 1 บาน"); return; }
+      
       btn.innerHTML = 'กำลังส่งข้อมูล...'; btn.disabled = true;
 
       let uType = document.getElementById('s_userType').value; if (uType === 'อื่นๆ') uType = document.getElementById('s_otherUser').value;
@@ -457,7 +483,7 @@
     }
 
     /* =======================================================
-       ฟังก์ชันปฏิทินแบบ Custom Grid
+       ปฏิทินแบบ Custom Grid
        ======================================================= */
     let currentDate = new Date();
     let calendarEvents = [];
@@ -466,140 +492,146 @@
       document.getElementById('calendarModal').style.display = 'flex';
       document.getElementById('calendarGrid').classList.add('hidden');
       document.getElementById('calendarLoading').style.display = 'block';
+      const oldMsg = document.getElementById('emptyCalMsg');
+      if (oldMsg) oldMsg.style.display = 'none';
+
       try {
         const res = await fetch(API_URL + "?action=calendar");
         const data = await res.json();
         if (data.success) { calendarEvents = data.events; }
-      } catch (e) { console.error("Calendar Load Error", e); }
+      } catch (e) { console.error("Calendar Error", e); }
       document.getElementById('calendarLoading').style.display = 'none';
       document.getElementById('calendarGrid').classList.remove('hidden');
       renderCalendar();
     }
 
-    function changeMonth(step) {
-      currentDate.setMonth(currentDate.getMonth() + step);
-      renderCalendar();
+    function changeMonth(step) { currentDate.setMonth(currentDate.getMonth() + step); renderCalendar(); }
+    
+    function extractTime(val) { 
+      if(!val) return ''; const str = String(val); 
+      if(str.includes(' เวลา ')) return str.split(' เวลา ')[1].replace(' น.', ''); 
+      if(str.includes('T')) return str.split('T')[1].substring(0,5); 
+      return str; 
     }
-
-    function extractTime(val) {
-      if (!val) return '';
-      const str = String(val);
-      // รองรับแบบใหม่
-      if (str.includes(' เวลา ')) return str.split(' เวลา ')[1].replace(' น.', '');
-      // รองรับแบบเก่าหรือ ISO Format (2026-09-02T08:30)
-      if (str.includes('T')) return str.split('T')[1].substring(0, 5);
-      return str;
+    
+    function shortDateTime(val) {
+      if(!val) return '';
+      const p = parseTimeStr(val);
+      if(p.dateStr) {
+        const parts = p.dateStr.split('-');
+        if(parts.length === 3) {
+          const y = parseInt(parts[0]) + 543;
+          return `${parts[2]}/${parts[1]}/${y} ${extractTime(val)}`;
+        }
+      }
+      return val;
     }
 
     function parseTimeStr(val) {
-      if (!val) return { dateStr: "", hour: 0 };
+      if(!val) return { dateStr: "", hour: 0 };
       const str = String(val);
-      
-      // กรณีฟอร์แมตใหม่: "2026-09-02 เวลา 08:30 น."
-      if (str.includes(' เวลา ')) {
-        const parts = str.split(' เวลา ');
-        const dStr = parts[0];
-        const tStr = parts[1].replace(' น.', '');
-        return { dateStr: dStr, hour: parseFloat(tStr.replace(':', '.')) };
-      }
-      
-      // กรณีฟอร์แมตเก่าหรือแบบ ISO: "2026-09-02T08:30"
-      if (str.includes('T')) {
-        const parts = str.split('T');
-        const dStr = parts[0];
-        const timePart = parts[1].split(':');
-        let hour = 0;
-        if (timePart.length >= 2) {
-          hour = parseFloat(timePart[0] + "." + timePart[1]);
-        }
-        return { dateStr: dStr, hour: hour };
-      }
-      
+      if(str.includes(' เวลา ')) { const p = str.split(' เวลา '); return { dateStr: p[0], hour: parseFloat(p[1].replace(' น.','').replace(':','.')) }; }
+      if(str.includes('T')) { const p = str.split('T'); const t = p[1].split(':'); return { dateStr: p[0], hour: t.length >= 2 ? parseFloat(t[0]+"."+t[1]) : 0 }; }
       return { dateStr: str.split(' ')[0], hour: 0 };
     }
-
-    // ฟังก์ชันช่วยแสดงผลเวลาให้สวยงามเวลานำเมาส์ไปชี้
+    
     function formatDisplayTime(val) {
-      if (!val) return '';
-      const str = String(val);
-      if (str.includes(' เวลา ')) return str;
-      if (str.includes('T')) {
-        const parts = str.split('T');
-        return parts[0] + ' เวลา ' + parts[1].substring(0, 5) + ' น.';
-      }
+      if(!val) return ''; const str = String(val);
+      if(str.includes(' เวลา ')) return str;
+      if(str.includes('T')) { const p = str.split('T'); return p[0] + ' เวลา ' + p[1].substring(0,5) + ' น.'; }
       return str;
     }
-
+    
     function getEventClass(fromStr, toStr, timeSlot) {
-      if (timeSlot === "นอกเวลาราชการ") return "event-outside";
-      
-      const from = parseTimeStr(fromStr);
-      const to = parseTimeStr(toStr);
-      
-      if (from.hour >= 16.30) return "event-outside";
-      if (to.hour <= 12.30) return "event-morning"; // เช้า (จบก่อนเที่ยงครึ่ง)
-      if (from.hour >= 12.00) return "event-afternoon"; // บ่าย (เริ่มเที่ยงเป็นต้นไป)
-      
-      return "event-full"; // คร่อมกลางวัน (เต็มวัน)
+      if(timeSlot === "นอกเวลาราชการ") return "event-outside";
+      const from = parseTimeStr(fromStr); const to = parseTimeStr(toStr);
+      if(from.hour >= 16.30) return "event-outside";
+      if(to.hour <= 12.30) return "event-morning";
+      if(from.hour >= 12.00) return "event-afternoon";
+      return "event-full";
     }
 
     function renderCalendar() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
       const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-      
       document.getElementById('monthYearDisplay').innerText = `${thaiMonths[month]} ${year + 543}`;
       
-      // ดึงค่าห้องเรียนที่ถูกเลือกจาก Dropdown
       const selectedRoom = document.getElementById('calendarRoomFilter').value;
-      
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       
       const grid = document.getElementById('calendarGrid');
       grid.innerHTML = '<div class="cal-header">อา.</div><div class="cal-header">จ.</div><div class="cal-header">อ.</div><div class="cal-header">พ.</div><div class="cal-header">พฤ.</div><div class="cal-header">ศ.</div><div class="cal-header">ส.</div>';
       
-      for (let i = 0; i < firstDay; i++) {
-        const emptyDiv = document.createElement('div');
-        emptyDiv.className = 'cal-day';
-        emptyDiv.style.backgroundColor = '#f8fafc';
-        grid.appendChild(emptyDiv);
+      let emptyMsg = document.getElementById('emptyCalMsg');
+      if (!emptyMsg) {
+        emptyMsg = document.createElement('div');
+        emptyMsg.id = 'emptyCalMsg';
+        emptyMsg.style.textAlign = 'center';
+        emptyMsg.style.padding = '25px';
+        emptyMsg.style.color = '#64748b';
+        emptyMsg.style.background = '#f8fafc';
+        emptyMsg.style.borderRadius = '8px';
+        emptyMsg.style.border = '1px dashed #cbd5e1';
+        emptyMsg.style.marginTop = '15px';
+        emptyMsg.innerText = 'ไม่มีคิวการจองในเดือนนี้';
+        grid.parentNode.insertBefore(emptyMsg, grid.nextSibling);
+      }
+      emptyMsg.style.display = 'none';
+
+      const eventList = document.getElementById('eventListContainer');
+      eventList.innerHTML = '<h4 style="margin-bottom: 5px; color: #4a5568;"><i class="fa-solid fa-list"></i> รายละเอียดการจองในเดือนนี้</h4>';
+      let hasMonthEvent = false;
+
+      for(let i=0; i<firstDay; i++) { 
+        const e = document.createElement('div'); 
+        e.className='cal-day empty-slot'; 
+        e.style.backgroundColor='#f8fafc'; 
+        grid.appendChild(e); 
       }
       
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dayDiv = document.createElement('div');
-        dayDiv.className = 'cal-day';
+      for(let day=1; day<=daysInMonth; day++) {
+        const dDiv = document.createElement('div'); dDiv.className='cal-day';
+        const dSpan = document.createElement('div'); dSpan.className='cal-date'; dSpan.innerText=day; dDiv.appendChild(dSpan);
+        const tDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
         
-        const dateSpan = document.createElement('div');
-        dateSpan.className = 'cal-date';
-        dateSpan.innerText = day;
-        dayDiv.appendChild(dateSpan);
-        
-        const targetDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        
-        calendarEvents.forEach(ev => {
-          // ถ้าไม่ได้เลือก "ดูทุกห้องเรียน" และชื่อห้องไม่ตรงกับที่กรอง ให้ข้ามรายการนี้ไป
-          if (selectedRoom !== "all" && ev.room !== selectedRoom) return;
+        const dotWrapper = document.createElement('div');
+        dotWrapper.className = 'cal-event-dot-wrapper';
+        dDiv.appendChild(dotWrapper);
 
+        calendarEvents.forEach(ev => {
+          if(selectedRoom !== "all" && ev.room !== selectedRoom) return;
           const fromParsed = parseTimeStr(ev.from);
-          if (fromParsed.dateStr === targetDateStr) {
+          if(fromParsed.dateStr === tDateStr) {
+            hasMonthEvent = true;
             const evClass = getEventClass(ev.from, ev.to, ev.timeSlot);
-            const evDiv = document.createElement('div');
-            evDiv.className = `cal-event ${evClass}`;
             
-            const startTime = extractTime(ev.from);
-            const endTime = extractTime(ev.to);
-            const displayFrom = formatDisplayTime(ev.from);
-            const displayTo = formatDisplayTime(ev.to);
-            
-            evDiv.innerHTML = `<b>${ev.room}</b><br>${ev.id}<br>${startTime} - ${endTime}`;
-            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nห้อง: ${ev.room}\nเวลา: ${displayFrom} - ${displayTo}`;
-            
-            dayDiv.appendChild(evDiv);
+            // ใส่จุดลงในตารางปฏิทิน
+            const evDiv = document.createElement('div'); 
+            evDiv.className=`cal-event ${evClass}`;
+            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nห้อง: ${ev.room}\nเวลา: ${formatDisplayTime(ev.from)} - ${formatDisplayTime(ev.to)}`;
+            dotWrapper.appendChild(evDiv);
+
+            // ใส่การ์ดลงในรายการด้านล่าง
+            const card = document.createElement('div');
+            card.className = 'event-card';
+            card.innerHTML = `
+              <div style="font-weight: bold; color: #1a202c; font-size: 15px; margin-bottom: 5px; border-left: 4px solid #9b59b6; padding-left: 8px;">${ev.room}</div>
+              <div style="font-size: 13px; color: #4a5568; margin-bottom: 3px;"><b><i class="fa-solid fa-hashtag"></i> Ticket:</b> ${ev.id}</div>
+              <div style="font-size: 13px; color: #4a5568; margin-bottom: 3px;"><b><i class="fa-regular fa-clock"></i> เริ่มจอง:</b> ${shortDateTime(ev.from)}</div>
+              <div style="font-size: 13px; color: #4a5568;"><b><i class="fa-solid fa-flag-checkered"></i> กำหนดเสร็จ:</b> ${shortDateTime(ev.to)}</div>
+            `;
+            eventList.appendChild(card);
           }
         });
-        
-        grid.appendChild(dayDiv);
+
+        grid.appendChild(dDiv);
+      }
+
+      if (!hasMonthEvent) { 
+        emptyMsg.style.display = 'block'; 
+        eventList.innerHTML += '<div style="font-size: 13px; color: #94a3b8; text-align: center; padding: 20px;">ไม่มีรายการจองในเดือนนี้</div>';
       }
     }
   </script>
