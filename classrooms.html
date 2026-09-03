@@ -142,7 +142,16 @@
       <div class="calendar-container">
         <div class="calendar-controls">
           <button onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i> เดือนก่อนหน้า</button>
-          <h4 id="monthYearDisplay" style="margin: 0;"></h4>
+          <div style="text-align: center;">
+            <h4 id="monthYearDisplay" style="margin: 0 0 5px 0;"></h4>
+            <select id="calendarRoomFilter" onchange="renderCalendar()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; cursor: pointer;">
+              <option value="all">ดูทุกห้องเรียน</option>
+              <option value="ห้องเรียน 301">ห้องเรียน 301</option>
+              <option value="ห้องเรียน 303">ห้องเรียน 303</option>
+              <option value="ห้องเรียน 806">ห้องเรียน 806</option>
+              <option value="ห้องเรียน 809">ห้องเรียน 809</option>
+            </select>
+          </div>
           <button onclick="changeMonth(1)">เดือนถัดไป <i class="fa-solid fa-chevron-right"></i></button>
         </div>
         <div id="calendarLoading" style="text-align: center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</div>
@@ -518,20 +527,51 @@
       
       document.getElementById('monthYearDisplay').innerText = `${thaiMonths[month]} ${year + 543}`;
       
+      // ดึงค่าห้องเรียนที่ถูกเลือกจาก Dropdown
+      const selectedRoom = document.getElementById('calendarRoomFilter').value;
+      
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       
       const grid = document.getElementById('calendarGrid');
-      // ลบกริดวันที่เก่าออกทั้งหมด (เก็บเฉพาะหัววัน จ-อา)
       grid.innerHTML = '<div class="cal-header">อา.</div><div class="cal-header">จ.</div><div class="cal-header">อ.</div><div class="cal-header">พ.</div><div class="cal-header">พฤ.</div><div class="cal-header">ศ.</div><div class="cal-header">ส.</div>';
       
-      // ช่องว่างก่อนเริ่มเดือน
       for (let i = 0; i < firstDay; i++) {
         const emptyDiv = document.createElement('div');
         emptyDiv.className = 'cal-day';
         emptyDiv.style.backgroundColor = '#f8fafc';
         grid.appendChild(emptyDiv);
       }
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'cal-day';
+        
+        const dateSpan = document.createElement('div');
+        dateSpan.className = 'cal-date';
+        dateSpan.innerText = day;
+        dayDiv.appendChild(dateSpan);
+        
+        const targetDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        calendarEvents.forEach(ev => {
+          // เงื่อนไข: ถ้าไม่ได้เลือก "ดูทุกห้องเรียน" และชื่อห้องไม่ตรงกับที่กรอง ให้ข้ามรายการนี้ไป
+          if (selectedRoom !== "all" && ev.room !== selectedRoom) return;
+
+          const fromParsed = parseTimeStr(ev.from);
+          if (fromParsed.dateStr === targetDateStr) {
+            const evClass = getEventClass(ev.from, ev.to, ev.timeSlot);
+            const evDiv = document.createElement('div');
+            evDiv.className = `cal-event ${evClass}`;
+            evDiv.innerHTML = `<b>${ev.room}</b><br>${ev.name}`;
+            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nห้อง: ${ev.room}\nเวลา: ${ev.from} - ${ev.to}`;
+            dayDiv.appendChild(evDiv);
+          }
+        });
+        
+        grid.appendChild(dayDiv);
+      }
+    }
       
       // สร้างช่องวันที่
       for (let day = 1; day <= daysInMonth; day++) {
