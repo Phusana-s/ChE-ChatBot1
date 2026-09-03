@@ -104,6 +104,7 @@
           <i class="fa-solid fa-chalkboard-user action-icon icon-room"></i>
           <div><div class="file-name">แบบฟอร์มการขอใช้ห้องเรียน</div><span class="file-tag">กรอกแบบฟอร์มเพื่อจองห้องเรียนออนไลน์</span></div>
         </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
       
       <!-- 3. แบบฟอร์มขอสแกนนิ้ว -->
@@ -112,14 +113,16 @@
           <i class="fa-solid fa-fingerprint action-icon icon-scan"></i>
           <div><div class="file-name">ขอสแกนลายนิ้วมือ</div><span class="file-tag">ฟอร์มขอเพิ่มสิทธิ์สแกนนิ้ว ภาควิชาวิศวกรรมเคมีฯ</span></div>
         </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
 
-      <!-- 4. ติดตามสถานะ (รวมทุกฟอร์ม) -->
+      <!-- 4. ติดตามสถานะ -->
       <div class="file-card" onclick="openTrackingModal()">
         <div class="file-info">
           <i class="fa-solid fa-magnifying-glass-chart action-icon icon-track"></i>
           <div><div class="file-name">ติดตามสถานะคำร้อง</div><span class="file-tag">ตรวจสอบสถานะการอนุมัติทั้งหมด</span></div>
         </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
 
       <!-- 5. รวมลิงก์ไฟล์ PDF -->
@@ -128,6 +131,7 @@
           <i class="fa-solid fa-file-pdf action-icon icon-pdf"></i>
           <div><div class="file-name">เอกสารและแบบฟอร์ม (PDF)</div><span class="file-tag">ดาวน์โหลดไฟล์เอกสารต้นฉบับเพื่อพิมพ์</span></div>
         </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
     </div>
   </div>
@@ -237,6 +241,7 @@
         <div id="s_other_user_div" class="form-group hidden"><label>โปรดระบุสถานะ</label><input type="text" id="s_otherUser"></div>
         <div class="form-group"><label>เบอร์โทรศัพท์ *</label><input type="tel" id="s_phone" required></div>
         <div class="form-group"><label>Email *</label><input type="email" id="s_email" required></div>
+        
         <div id="s_dept_faculty_div" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="hidden">
           <div class="form-group">
             <label>คณะ *</label>
@@ -248,6 +253,7 @@
           </div>
         </div>
         <div class="form-group"><label>วัตถุประสงค์เพื่อ *</label><input type="text" id="s_purpose" required></div>
+        
         <div id="s_advisor_container" class="hidden">
           <div class="form-group">
             <label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label>
@@ -255,6 +261,7 @@
           </div>
           <div id="s_other_advisor_div" class="form-group hidden"><label>ระบุชื่ออาจารย์</label><input type="text" id="s_otherAdvisor"></div>
         </div>
+        
         <div class="form-group">
           <label>มีความประสงค์ขอสแกนลายนิ้วมือ (เลือกได้มากกว่า 1 ข้อ) *</label>
           <div class="checkbox-group">
@@ -339,9 +346,11 @@
       const val = document.getElementById('s_userType').value; 
       document.getElementById('s_student_fields').classList.toggle('hidden', val !== 'นักศึกษา ป.ตรี'); 
       document.getElementById('s_other_user_div').classList.toggle('hidden', val !== 'อื่นๆ'); 
+      
       const showDeptFac = val !== 'อื่นๆ' && val !== '';
       document.getElementById('s_dept_faculty_div').classList.toggle('hidden', !showDeptFac);
       document.getElementById('s_faculty').required = showDeptFac; document.getElementById('s_dept').required = showDeptFac;
+      
       const reqAdvisor = ['นักศึกษา ป.ตรี', 'นักศึกษา ป.โท', 'นักศึกษา ป.เอก', 'ผู้ช่วยนักวิจัย'].includes(val);
       document.getElementById('s_advisor_container').classList.toggle('hidden', !reqAdvisor);
       document.getElementById('s_advisor').required = reqAdvisor;
@@ -428,6 +437,7 @@
       } catch (error) { alert("ล้มเหลว กรุณาลองใหม่"); } finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ส่งคำขอจองห้อง'; btn.disabled = false; }
     }
 
+    // ติดตามสถานะ
     async function fetchTicketData() {
       const ticketId = document.getElementById('ticketInput').value.trim().toUpperCase();
       if(!ticketId) return;
@@ -462,9 +472,8 @@
       if (currentAdmin === "รอตรวจสอบ") { adminBadge.innerHTML = "รอตรวจสอบ"; adminBadge.style.backgroundColor = "#ffc107"; adminBadge.style.color = "#212529"; } 
       else if (currentAdmin === "อนุมัติ") { adminBadge.innerHTML = "อนุมัติ"; adminBadge.style.backgroundColor = "#28a745"; adminBadge.style.color = "#ffffff"; } 
       else if (currentAdmin === "ไม่อนุมัติ") { adminBadge.innerHTML = "ไม่อนุมัติ"; adminBadge.style.backgroundColor = "#dc3545"; adminBadge.style.color = "#ffffff"; } 
-      else if (currentAdmin === "รับทราบ/ดำเนินการแล้ว") {
-        adminBadge.innerHTML = "รับทราบ/ดำเนินการแล้ว"; adminBadge.style.backgroundColor = "#28a745"; adminBadge.style.color = "#ffffff"; 
-      } else { adminBadge.innerHTML = currentAdmin; adminBadge.style.backgroundColor = "#6c757d"; adminBadge.style.color = "#ffffff"; }
+      else if (currentAdmin === "รับทราบ/ดำเนินการแล้ว") { adminBadge.innerHTML = "รับทราบ/ดำเนินการแล้ว"; adminBadge.style.backgroundColor = "#28a745"; adminBadge.style.color = "#ffffff"; } 
+      else { adminBadge.innerHTML = currentAdmin; adminBadge.style.backgroundColor = "#6c757d"; adminBadge.style.color = "#ffffff"; }
     }
 
     /* =======================================================
@@ -498,7 +507,6 @@
       renderCalendar();
     }
 
-    // แปลง Text เวลา (เช่น "2026-09-02 เวลา 08:30 น.") เป็น Date / Float Hour
     function parseTimeStr(str) {
       const parts = str.split(' เวลา ');
       if(parts.length < 2) return { dateStr: str, hour: 0 };
@@ -514,10 +522,10 @@
       const to = parseTimeStr(toStr);
       
       if (from.hour >= 16.30) return "event-outside";
-      if (to.hour <= 12.30) return "event-morning"; // เช้า (จบก่อนเที่ยงครึ่ง)
-      if (from.hour >= 12.00) return "event-afternoon"; // บ่าย (เริ่มเที่ยงเป็นต้นไป)
+      if (to.hour <= 12.30) return "event-morning"; // เช้า
+      if (from.hour >= 12.00) return "event-afternoon"; // บ่าย
       
-      return "event-full"; // คร่อมกลางวัน (เต็มวัน)
+      return "event-full"; // เต็มวัน
     }
 
     function renderCalendar() {
@@ -555,38 +563,8 @@
         const targetDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
         calendarEvents.forEach(ev => {
-          // เงื่อนไข: ถ้าไม่ได้เลือก "ดูทุกห้องเรียน" และชื่อห้องไม่ตรงกับที่กรอง ให้ข้ามรายการนี้ไป
           if (selectedRoom !== "all" && ev.room !== selectedRoom) return;
 
-          const fromParsed = parseTimeStr(ev.from);
-          if (fromParsed.dateStr === targetDateStr) {
-            const evClass = getEventClass(ev.from, ev.to, ev.timeSlot);
-            const evDiv = document.createElement('div');
-            evDiv.className = `cal-event ${evClass}`;
-            evDiv.innerHTML = `<b>${ev.room}</b><br>${ev.name}`;
-            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nห้อง: ${ev.room}\nเวลา: ${ev.from} - ${ev.to}`;
-            dayDiv.appendChild(evDiv);
-          }
-        });
-        
-        grid.appendChild(dayDiv);
-      }
-    }
-      
-      // สร้างช่องวันที่
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dayDiv = document.createElement('div');
-        dayDiv.className = 'cal-day';
-        
-        const dateSpan = document.createElement('div');
-        dateSpan.className = 'cal-date';
-        dateSpan.innerText = day;
-        dayDiv.appendChild(dateSpan);
-        
-        // เช็คว่ามีคิวห้องเรียนวันนี้ไหม
-        const targetDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        
-        calendarEvents.forEach(ev => {
           const fromParsed = parseTimeStr(ev.from);
           if (fromParsed.dateStr === targetDateStr) {
             const evClass = getEventClass(ev.from, ev.to, ev.timeSlot);
