@@ -68,16 +68,17 @@
     .cal-date { text-align: center; font-size: 13px; font-weight: bold; color: #64748b; margin-bottom: 4px; background: #f1f5f9; border-radius: 4px; padding: 2px 0; }
     
     .cal-event-dot-wrapper { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 4px; }
-    .cal-event { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+    .cal-event { width: 12px; height: 12px; border-radius: 50%; display: inline-block; cursor: pointer; }
     
     .event-full { background-color: #3b82f6; border: 1px solid #2563eb; }
     .event-outside { background-color: #22c55e; border: 1px solid #16a34a; }
     .event-morning { background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border: 1px solid #2563eb; }
     .event-afternoon { background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border: 1px solid #2563eb; }
 
-    .event-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; border-top: 2px solid #e2e8f0; padding-top: 20px; }
+    .event-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; border-top: 2px solid #e2e8f0; padding-top: 15px; }
     .event-card { padding: 15px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
 
+    /* ปรับแต่งปฏิทินสำหรับมือถือ ให้เล็กกะทัดรัด */
     @media (max-width: 600px) {
       .header { flex-direction: column; align-items: flex-start; gap: 12px; }
       .back-btn { padding: 6px 12px; font-size: 12px; align-self: flex-start; }
@@ -86,10 +87,11 @@
       
       .calendar-grid { gap: 2px; }
       .cal-header { font-size: 10px; padding: 4px 0; }
-      .cal-day { min-height: 45px; padding: 2px; }
-      .cal-date { font-size: 11px; padding: 2px; }
+      .cal-day { min-height: 40px; padding: 2px; border-radius: 4px; }
+      .cal-date { font-size: 10px; padding: 2px 4px; margin-bottom: 2px; border-radius: 2px; }
       .cal-event { width: 8px; height: 8px; margin: 1px; }
       .cal-event-dot-wrapper { gap: 2px; padding-top: 2px; }
+      .event-list-container { margin-top: 10px; padding-top: 10px; }
     }
   </style>
 </head>
@@ -161,6 +163,7 @@
           <button onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
           <div style="text-align: center;">
             <h4 id="monthYearDisplay" style="margin: 0 0 5px 0;"></h4>
+            <!-- ตัวกรองปฏิทิน: แสดงเฉพาะห้องเรียน -->
             <select id="calendarRoomFilter" onchange="renderCalendar()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; cursor: pointer; max-width: 200px;">
               <option value="all">ดูทุกห้องเรียน</option>
               <option value="ห้องเรียน 301">ห้องเรียน 301</option>
@@ -173,6 +176,7 @@
         </div>
         <div id="calendarLoading" style="text-align: center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</div>
         
+        <!-- ตารางปฏิทิน -->
         <div id="calendarGrid" class="calendar-grid hidden"></div>
         
         <div style="margin-top: 15px; font-size: 11px; color: #64748b; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
@@ -181,7 +185,7 @@
           <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border: 1px solid #2563eb;"></div> ครึ่งบ่าย</span>
           <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #22c55e;"></div> นอกเวลา</span>
         </div>
-        
+
         <!-- แถบการ์ดรายละเอียดด้านล่าง -->
         <div id="eventListContainer" class="event-list-container"></div>
       </div>
@@ -290,7 +294,7 @@
     </div>
   </div>
 
-  <!-- ================= Popup PDF ================= -->
+  <!-- ================= 3. Popup รวมไฟล์ PDF ================= -->
   <div class="modal-overlay" id="pdfModal">
     <div class="modal-box">
       <div class="modal-header"><h3>ไฟล์เอกสารและแบบฟอร์ม (PDF)</h3><button class="close-modal" onclick="closeModal('pdfModal')"><i class="fa-solid fa-xmark"></i></button></div>
@@ -301,7 +305,7 @@
     </div>
   </div>
 
-  <!-- ================= Popup ติดตามสถานะ ================= -->
+  <!-- ================= 4. Popup ติดตามสถานะ ================= -->
   <div class="modal-overlay" id="trackingModal">
     <div class="modal-box">
       <div class="modal-header"><h3>ติดตามสถานะคำร้อง</h3><button class="close-modal" onclick="closeModal('trackingModal')"><i class="fa-solid fa-xmark"></i></button></div>
@@ -472,7 +476,7 @@
 
     function setBadges(advId, advStatus, adminId, adminStatus, returnStatus) {
       const advBadge = document.getElementById(advId); const currentAdv = advStatus || "รอตรวจสอบ"; advBadge.innerText = currentAdv;
-      if (currentAdv === "อนุมัติ" || currentAdv === "อนุมัติแล้ว") { advBadge.style.backgroundColor = "#28a745"; advBadge.style.color = "#ffffff"; } else if (currentAdv === "ไม่อนุมัติ") { advBadge.style.backgroundColor = "#dc3545"; advBadge.style.color = "#ffffff"; } else { advBadge.style.backgroundColor = "#ffc107"; advBadge.style.color = "#212529"; }
+      if (currentAdv === "อนุมัติ" || currentAdv === "อนุมัติแล้ว" || currentAdv === "-") { advBadge.style.backgroundColor = "#28a745"; advBadge.style.color = "#ffffff"; } else if (currentAdv === "ไม่อนุมัติ") { advBadge.style.backgroundColor = "#dc3545"; advBadge.style.color = "#ffffff"; } else { advBadge.style.backgroundColor = "#ffc107"; advBadge.style.color = "#212529"; }
       
       const adminBadge = document.getElementById(adminId); const currentAdmin = adminStatus || "รอตรวจสอบ"; adminBadge.style.padding = "4px 10px";
       if (currentAdmin === "รอตรวจสอบ") { adminBadge.innerHTML = "รอตรวจสอบ"; adminBadge.style.backgroundColor = "#ffc107"; adminBadge.style.color = "#212529"; } 
@@ -607,13 +611,11 @@
             hasMonthEvent = true;
             const evClass = getEventClass(ev.from, ev.to, ev.timeSlot);
             
-            // ใส่จุดลงในตารางปฏิทิน
             const evDiv = document.createElement('div'); 
             evDiv.className=`cal-event ${evClass}`;
-            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nห้อง: ${ev.room}\nเวลา: ${formatDisplayTime(ev.from)} - ${formatDisplayTime(ev.to)}`;
+            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nห้องเรียน: ${ev.room}\nเวลา: ${formatDisplayTime(ev.from)} - ${formatDisplayTime(ev.to)}`;
             dotWrapper.appendChild(evDiv);
 
-            // ใส่การ์ดลงในรายการด้านล่าง
             const card = document.createElement('div');
             card.className = 'event-card';
             card.innerHTML = `
