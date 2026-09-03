@@ -312,7 +312,7 @@
 
   <script>
     // ⚠️ ต้องวาง URL ของ Web App ใหม่ที่นี่
-    const API_URL = "วาง_URL_WEB_APP_ใหม่ที่นี่"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbwGdBVo8qYjDg1xObvINUt-KJCfr-0bVNZFJ74czq7bfHitL3c-ct2U7hkjCktQ5L7x/exec"; 
 
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
@@ -481,27 +481,66 @@
       renderCalendar();
     }
 
-    function extractTime(str) {
-      const parts = str.split(' เวลา ');
-      return parts.length > 1 ? parts[1].replace(' น.', '') : '';
+    function extractTime(val) {
+      if (!val) return '';
+      const str = String(val);
+      // รองรับแบบใหม่
+      if (str.includes(' เวลา ')) return str.split(' เวลา ')[1].replace(' น.', '');
+      // รองรับแบบเก่าหรือ ISO Format (2026-09-02T08:30)
+      if (str.includes('T')) return str.split('T')[1].substring(0, 5);
+      return str;
     }
 
-    function parseTimeStr(str) {
-      const parts = str.split(' เวลา ');
-      if(parts.length < 2) return { dateStr: str, hour: 0 };
-      const dStr = parts[0];
-      const tStr = parts[1].replace(' น.', '');
-      return { dateStr: dStr, hour: parseFloat(tStr.replace(':', '.')) };
+    function parseTimeStr(val) {
+      if (!val) return { dateStr: "", hour: 0 };
+      const str = String(val);
+      
+      // กรณีฟอร์แมตใหม่: "2026-09-02 เวลา 08:30 น."
+      if (str.includes(' เวลา ')) {
+        const parts = str.split(' เวลา ');
+        const dStr = parts[0];
+        const tStr = parts[1].replace(' น.', '');
+        return { dateStr: dStr, hour: parseFloat(tStr.replace(':', '.')) };
+      }
+      
+      // กรณีฟอร์แมตเก่าหรือแบบ ISO: "2026-09-02T08:30"
+      if (str.includes('T')) {
+        const parts = str.split('T');
+        const dStr = parts[0];
+        const timePart = parts[1].split(':');
+        let hour = 0;
+        if (timePart.length >= 2) {
+          hour = parseFloat(timePart[0] + "." + timePart[1]);
+        }
+        return { dateStr: dStr, hour: hour };
+      }
+      
+      return { dateStr: str.split(' ')[0], hour: 0 };
+    }
+
+    // ฟังก์ชันช่วยแสดงผลเวลาให้สวยงามเวลานำเมาส์ไปชี้
+    function formatDisplayTime(val) {
+      if (!val) return '';
+      const str = String(val);
+      if (str.includes(' เวลา ')) return str;
+      if (str.includes('T')) {
+        const parts = str.split('T');
+        return parts[0] + ' เวลา ' + parts[1].substring(0, 5) + ' น.';
+      }
+      return str;
     }
 
     function getEventClass(fromStr, toStr, timeSlot) {
       if (timeSlot === "นอกเวลาราชการ") return "event-outside";
+      
       const from = parseTimeStr(fromStr);
       const to = parseTimeStr(toStr);
+      
       if (from.hour >= 16.30) return "event-outside";
-      if (to.hour <= 12.30) return "event-morning"; // เช้า
-      if (from.hour >= 12.00) return "event-afternoon"; // บ่าย
-      return "event-full"; // เต็มวัน
+      if (to.hour <= 12.30) return "event-morning"; // เช้า (จบก่อนเที่ยงครึ่ง)
+      if (from.hour >= 12.00) return "event-afternoon"; // บ่าย (เริ่มเที่ยงเป็นต้นไป)
+      
+      return "event-full"; // คร่อมกลางวัน (เต็มวัน)
     }
 
     function renderCalendar() {
@@ -511,7 +550,9 @@
       
       document.getElementById('monthYearDisplay').innerText = `${thaiMonths[month]} ${year + 543}`;
       
+      // ดึงค่าห้องเรียนที่ถูกเลือกจาก Dropdown
       const selectedRoom = document.getElementById('calendarRoomFilter').value;
+      
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       
@@ -537,6 +578,7 @@
         const targetDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
         calendarEvents.forEach(ev => {
+          // ถ้าไม่ได้เลือก "ดูทุกห้องเรียน" และชื่อห้องไม่ตรงกับที่กรอง ให้ข้ามรายการนี้ไป
           if (selectedRoom !== "all" && ev.room !== selectedRoom) return;
 
           const fromParsed = parseTimeStr(ev.from);
@@ -545,11 +587,13 @@
             const evDiv = document.createElement('div');
             evDiv.className = `cal-event ${evClass}`;
             
-            // ปรับแก้ข้อมูลที่แสดงผล 1. ห้องเรียน 2. Ticket ID 3. เวลา
             const startTime = extractTime(ev.from);
             const endTime = extractTime(ev.to);
+            const displayFrom = formatDisplayTime(ev.from);
+            const displayTo = formatDisplayTime(ev.to);
+            
             evDiv.innerHTML = `<b>${ev.room}</b><br>${ev.id}<br>${startTime} - ${endTime}`;
-            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nห้อง: ${ev.room}\nเวลา: ${ev.from} - ${ev.to}`;
+            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nห้อง: ${ev.room}\nเวลา: ${displayFrom} - ${displayTo}`;
             
             dayDiv.appendChild(evDiv);
           }
