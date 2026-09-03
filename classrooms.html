@@ -23,6 +23,7 @@
     .icon-room { color: #9b59b6; }
     .icon-scan { color: #e67e22; }
     .icon-track { color: #007bff; }
+    .icon-calendar { color: #28a745; }
     .icon-pdf { color: #e74c3c; }
     .file-name { font-weight: bold; font-size: 16px; color: #1a202c; line-height: 1.4; }
     .file-tag { display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-top: 4px; font-weight: 600; }
@@ -54,11 +55,28 @@
     .checkbox-group label { font-weight: normal; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0; }
     .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
 
+    /* Calendar Styles */
+    .calendar-container { max-width: 100%; overflow-x: auto; }
+    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .calendar-controls button { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(80px, 1fr)); gap: 4px; }
+    .cal-header { font-weight: bold; text-align: center; background: #e2e8f0; padding: 8px 0; font-size: 13px; border-radius: 4px; }
+    .cal-day { min-height: 90px; border: 1px solid #e2e8f0; padding: 4px; border-radius: 4px; background: #fff; display: flex; flex-direction: column; gap: 4px; }
+    .cal-date { text-align: right; font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 4px; }
+    .cal-event { font-size: 11px; padding: 4px 6px; border-radius: 4px; line-height: 1.3; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    
+    /* Event Color Logic */
+    .event-full { background-color: #3b82f6; color: white; border: 1px solid #2563eb; }
+    .event-outside { background-color: #22c55e; color: white; border: 1px solid #16a34a; }
+    .event-morning { background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border-left: 3px solid #2563eb; border-top: 3px solid #2563eb; color: #0f172a; }
+    .event-afternoon { background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border-right: 3px solid #2563eb; border-bottom: 3px solid #2563eb; color: #0f172a; }
+
     @media (max-width: 500px) {
       .header { flex-direction: column; align-items: flex-start; gap: 12px; }
       .back-btn { padding: 6px 12px; font-size: 12px; align-self: flex-start; }
       .pdf-item { flex-direction: column; gap: 10px; align-items: flex-start; }
       .download-btn { width: 100%; justify-content: center; }
+      .cal-day { min-height: 70px; }
     }
   </style>
 </head>
@@ -71,28 +89,72 @@
     </div>
 
     <div class="file-grid">
+      <!-- 1. ปฏิทินการจอง -->
+      <div class="file-card" onclick="openCalendarModal()">
+        <div class="file-info">
+          <i class="fa-solid fa-calendar-alt action-icon icon-calendar"></i>
+          <div><div class="file-name">ปฏิทินการจองห้องเรียน</div><span class="file-tag">ตรวจสอบคิวการใช้ห้องเรียน</span></div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
+      </div>
+
+      <!-- 2. แบบฟอร์มขอใช้ห้องเรียน -->
       <div class="file-card" onclick="openModal('roomModal')">
         <div class="file-info">
           <i class="fa-solid fa-chalkboard-user action-icon icon-room"></i>
           <div><div class="file-name">แบบฟอร์มการขอใช้ห้องเรียน</div><span class="file-tag">กรอกแบบฟอร์มเพื่อจองห้องเรียนออนไลน์</span></div>
         </div>
       </div>
+      
+      <!-- 3. แบบฟอร์มขอสแกนนิ้ว -->
       <div class="file-card" onclick="openModal('scanModal')">
         <div class="file-info">
           <i class="fa-solid fa-fingerprint action-icon icon-scan"></i>
           <div><div class="file-name">ขอสแกนลายนิ้วมือ</div><span class="file-tag">ฟอร์มขอเพิ่มสิทธิ์สแกนนิ้ว ภาควิชาวิศวกรรมเคมีฯ</span></div>
         </div>
       </div>
+
+      <!-- 4. ติดตามสถานะ (รวมทุกฟอร์ม) -->
       <div class="file-card" onclick="openTrackingModal()">
         <div class="file-info">
           <i class="fa-solid fa-magnifying-glass-chart action-icon icon-track"></i>
           <div><div class="file-name">ติดตามสถานะคำร้อง</div><span class="file-tag">ตรวจสอบสถานะการอนุมัติทั้งหมด</span></div>
         </div>
       </div>
+
+      <!-- 5. รวมลิงก์ไฟล์ PDF -->
       <div class="file-card" onclick="openModal('pdfModal')">
         <div class="file-info">
           <i class="fa-solid fa-file-pdf action-icon icon-pdf"></i>
           <div><div class="file-name">เอกสารและแบบฟอร์ม (PDF)</div><span class="file-tag">ดาวน์โหลดไฟล์เอกสารต้นฉบับเพื่อพิมพ์</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Popup ปฏิทิน ================= -->
+  <div class="modal-overlay" id="calendarModal">
+    <div class="modal-box" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-calendar-alt"></i> ปฏิทินการจองห้องเรียน</h3>
+        <button class="close-modal" onclick="closeModal('calendarModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="calendar-container">
+        <div class="calendar-controls">
+          <button onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i> เดือนก่อนหน้า</button>
+          <h4 id="monthYearDisplay" style="margin: 0;"></h4>
+          <button onclick="changeMonth(1)">เดือนถัดไป <i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div id="calendarLoading" style="text-align: center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</div>
+        <div id="calendarGrid" class="calendar-grid hidden">
+          <div class="cal-header">อา.</div><div class="cal-header">จ.</div><div class="cal-header">อ.</div><div class="cal-header">พ.</div><div class="cal-header">พฤ.</div><div class="cal-header">ศ.</div><div class="cal-header">ส.</div>
+          <!-- Grid content generated via JS -->
+        </div>
+        <div style="margin-top: 15px; font-size: 11px; color: #64748b; display: flex; gap: 10px; flex-wrap: wrap;">
+          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #3b82f6;"></div> เต็มวัน</span>
+          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border: 1px solid #2563eb;"></div> ครึ่งเช้า</span>
+          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border: 1px solid #2563eb;"></div> ครึ่งบ่าย</span>
+          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #22c55e;"></div> นอกเวลา</span>
         </div>
       </div>
     </div>
@@ -107,14 +169,7 @@
         <div class="form-group">
           <label>สถานะผู้แจ้ง *</label>
           <select id="r_userType" onchange="toggleRoomUserFields()" required>
-            <option value="">-- เลือกสถานะ --</option>
-            <option value="นักศึกษา ป.ตรี">นักศึกษา ป.ตรี</option>
-            <option value="นักศึกษา ป.โท">นักศึกษา ป.โท</option>
-            <option value="นักศึกษา ป.เอก">นักศึกษา ป.เอก</option>
-            <option value="ผู้ช่วยนักวิจัย">ผู้ช่วยนักวิจัย</option>
-            <option value="เจ้าหน้าที่">เจ้าหน้าที่</option>
-            <option value="อาจารย์">อาจารย์</option>
-            <option value="อื่นๆ">อื่นๆ</option>
+            <option value="">-- เลือกสถานะ --</option><option value="นักศึกษา ป.ตรี">นักศึกษา ป.ตรี</option><option value="นักศึกษา ป.โท">นักศึกษา ป.โท</option><option value="นักศึกษา ป.เอก">นักศึกษา ป.เอก</option><option value="ผู้ช่วยนักวิจัย">ผู้ช่วยนักวิจัย</option><option value="เจ้าหน้าที่">เจ้าหน้าที่</option><option value="อาจารย์">อาจารย์</option><option value="อื่นๆ">อื่นๆ</option>
           </select>
         </div>
         <div id="r_student_fields" class="hidden" style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -127,36 +182,18 @@
         <div class="form-group"><label>Email *</label><input type="email" id="r_email" required></div>
         <div class="form-group"><label>ภาควิชาผู้ขอใช้ห้อง *</label><select id="r_dept" required><option value="">-- เลือกภาควิชา --</option><option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option><option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option><option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option><option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option><option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option><option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option><option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม</option><option value="ภาควิชาวิศวกรรมวัสดุและโลหการ">ภาควิชาวิศวกรรมวัสดุและโลหการ</option><option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option><option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option></select></div>
         <div class="form-group"><label>มีความประสงค์ขอใช้ห้องเพื่อ *</label><input type="text" id="r_purpose" required></div>
-        
         <div class="form-group">
           <label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label>
           <select id="r_advisor" onchange="toggleRoomAdvisor()" required>
-            <option value="">-- เลือกอาจารย์ --</option>
-            <option value="รศ.ดร.ไชยยันต์ ไชยยะ">รศ.ดร.ไชยยันต์ ไชยยะ</option>
-            <option value="รศ.ดร.ศศิรดี จันทสี">รศ.ดร.ศศิรดี จันทสี</option>
-            <option value="รศ.ดร.วีรินทร์ดา เมนส์">รศ.ดร.วีรินทร์ดา เมนส์</option>
-            <option value="รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย">รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย</option>
-            <option value="รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม">รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม</option>
-            <option value="ผศ.ดร.รินลดา สิริแสงสว่าง">ผศ.ดร.รินลดา สิริแสงสว่าง</option>
-            <option value="ผศ.ยรรยง สุขคล้าย">ผศ.ยรรยง สุขคล้าย</option>
-            <option value="รศ.ศราวุธ จิตต์พินิจ">รศ.ศราวุธ จิตต์พินิจ</option>
-            <option value="รศ.ดร.วีราภรณ์ ผิวสอาด">รศ.ดร.วีราภรณ์ ผิวสอาด</option>
-            <option value="ผศ.ดร.ชัยภพ ศิระวรกุล">ผศ.ดร.ชัยภพ ศิระวรกุล</option>
-            <option value="อาจารย์พุทธิพร เทียมสินสังวร">อาจารย์พุทธิพร เทียมสินสังวร</option>
-            <option value="อาจารย์นวพร เพิ่มสมบัติ">อาจารย์นวพร เพิ่มสมบัติ</option>
-            <option value="อื่นๆ">อื่นๆ</option>
+            <option value="">-- เลือกอาจารย์ --</option><option value="รศ.ดร.ไชยยันต์ ไชยยะ">รศ.ดร.ไชยยันต์ ไชยยะ</option><option value="รศ.ดร.ศศิรดี จันทสี">รศ.ดร.ศศิรดี จันทสี</option><option value="รศ.ดร.วีรินทร์ดา เมนส์">รศ.ดร.วีรินทร์ดา เมนส์</option><option value="รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย">รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย</option><option value="รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม">รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม</option><option value="ผศ.ดร.รินลดา สิริแสงสว่าง">ผศ.ดร.รินลดา สิริแสงสว่าง</option><option value="ผศ.ยรรยง สุขคล้าย">ผศ.ยรรยง สุขคล้าย</option><option value="รศ.ศราวุธ จิตต์พินิจ">รศ.ศราวุธ จิตต์พินิจ</option><option value="รศ.ดร.วีราภรณ์ ผิวสอาด">รศ.ดร.วีราภรณ์ ผิวสอาด</option><option value="ผศ.ดร.ชัยภพ ศิระวรกุล">ผศ.ดร.ชัยภพ ศิระวรกุล</option><option value="อาจารย์พุทธิพร เทียมสินสังวร">อาจารย์พุทธิพร เทียมสินสังวร</option><option value="อาจารย์นวพร เพิ่มสมบัติ">อาจารย์นวพร เพิ่มสมบัติ</option><option value="อื่นๆ">อื่นๆ</option>
           </select>
         </div>
         <div id="r_other_advisor_div" class="form-group hidden"><label>ระบุชื่ออาจารย์</label><input type="text" id="r_otherAdvisor"></div>
-
         <div class="form-group">
           <label>ขอใช้ห้อง *</label>
           <select id="r_room" required>
             <option value="">-- เลือกห้อง --</option>
-            <option value="ห้องเรียน 301">ห้องเรียน 301</option>
-            <option value="ห้องเรียน 303">ห้องเรียน 303</option>
-            <option value="ห้องเรียน 806">ห้องเรียน 806</option>
-            <option value="ห้องเรียน 809">ห้องเรียน 809</option>
+            <option value="ห้องเรียน 301">ห้องเรียน 301</option><option value="ห้องเรียน 303">ห้องเรียน 303</option><option value="ห้องเรียน 806">ห้องเรียน 806</option><option value="ห้องเรียน 809">ห้องเรียน 809</option>
           </select>
         </div>
         <div class="form-group"><label>เลือกเวลา *</label><select id="r_timeSlot" required><option value="">-- เลือกระยะเวลา --</option><option value="ในเวลาราชการ">ในเวลาราชการ</option><option value="นอกเวลาราชการ">นอกเวลาราชการ</option></select></div>
@@ -164,12 +201,7 @@
           <div class="form-group"><label>ในวันที่ ตั้งแต่ *</label><input type="datetime-local" id="r_fromDate" required></div>
           <div class="form-group"><label>ถึงวันที่ *</label><input type="datetime-local" id="r_toDate" required></div>
         </div>
-
-        <div id="r_evidence_div" class="form-group hidden">
-          <label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (หนังสือบันทึกข้อความ)</label>
-          <input type="file" id="r_evidenceFile" accept="image/*">
-        </div>
-        
+        <div id="r_evidence_div" class="form-group hidden"><label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (ถ้ามี)</label><input type="file" id="r_evidenceFile" accept="image/*"></div>
         <button type="submit" id="btnSubmitRoom" class="btn-main"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอจองห้อง</button>
       </form>
       <div id="roomSuccess" class="hidden" style="text-align: center; padding: 20px 0;"><i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745;"></i><h3>ส่งคำขอเรียบร้อย!</h3><div id="showTicketId_ROOM" style="font-weight: bold; font-size: 20px; margin-top: 10px;"></div></div>
@@ -179,101 +211,41 @@
   <!-- ================= 2. Popup ขอสแกนลายนิ้วมือ ================= -->
   <div class="modal-overlay" id="scanModal">
     <div class="modal-box">
-      <div class="modal-header">
-        <h3>แบบฟอร์มขอสแกนลายนิ้วมือ</h3>
-        <button class="close-modal" onclick="closeModal('scanModal')"><i class="fa-solid fa-xmark"></i></button>
-      </div>
+      <div class="modal-header"><h3>แบบฟอร์มขอสแกนลายนิ้วมือ</h3><button class="close-modal" onclick="closeModal('scanModal')"><i class="fa-solid fa-xmark"></i></button></div>
       <form id="scanForm" onsubmit="submitScanForm(event)">
         <div class="form-group"><label>ชื่อ-สกุล *</label><input type="text" id="s_name" required></div>
-        
         <div class="form-group">
           <label>สถานะผู้แจ้ง *</label>
           <select id="s_userType" onchange="toggleScanUserFields()" required>
-            <option value="">-- เลือกสถานะ --</option>
-            <option value="นักศึกษา ป.ตรี">นักศึกษา ป.ตรี</option>
-            <option value="นักศึกษา ป.โท">นักศึกษา ป.โท</option>
-            <option value="นักศึกษา ป.เอก">นักศึกษา ป.เอก</option>
-            <option value="ผู้ช่วยนักวิจัย">ผู้ช่วยนักวิจัย</option>
-            <option value="เจ้าหน้าที่">เจ้าหน้าที่</option>
-            <option value="อาจารย์">อาจารย์</option>
-            <option value="อื่นๆ">อื่นๆ</option>
+            <option value="">-- เลือกสถานะ --</option><option value="นักศึกษา ป.ตรี">นักศึกษา ป.ตรี</option><option value="นักศึกษา ป.โท">นักศึกษา ป.โท</option><option value="นักศึกษา ป.เอก">นักศึกษา ป.เอก</option><option value="ผู้ช่วยนักวิจัย">ผู้ช่วยนักวิจัย</option><option value="เจ้าหน้าที่">เจ้าหน้าที่</option><option value="อาจารย์">อาจารย์</option><option value="อื่นๆ">อื่นๆ</option>
           </select>
         </div>
-        
         <div id="s_student_fields" class="hidden" style="display: flex; gap: 10px; flex-wrap: wrap;">
           <div class="form-group" style="flex: 1; min-width: 140px;"><label>รหัสนักศึกษา</label><input type="text" id="s_studentId"></div>
           <div class="form-group" style="width: 80px;"><label>ชั้นปีที่</label><select id="s_year"><option value="">เลือก</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div>
           <div class="form-group" style="width: 80px;"><label>Section</label><select id="s_section"><option value="">เลือก</option><option value="1">1</option><option value="2">2</option></select></div>
         </div>
         <div id="s_other_user_div" class="form-group hidden"><label>โปรดระบุสถานะ</label><input type="text" id="s_otherUser"></div>
-        
         <div class="form-group"><label>เบอร์โทรศัพท์ *</label><input type="tel" id="s_phone" required></div>
         <div class="form-group"><label>Email *</label><input type="email" id="s_email" required></div>
-        
-        <!-- ซ่อน/แสดง คณะและภาควิชา (เฉพาะที่ไม่ใช่ อื่นๆ) -->
         <div id="s_dept_faculty_div" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="hidden">
           <div class="form-group">
             <label>คณะ *</label>
-            <select id="s_faculty">
-              <option value="">-- เลือกคณะ --</option>
-              <option value="คณะวิศวกรรมศาสตร์">คณะวิศวกรรมศาสตร์</option>
-              <option value="คณะบริหารธุรกิจ">คณะบริหารธุรกิจ</option>
-              <option value="คณะเทคโนโลยีคหกรรมศาสตร์">คณะเทคโนโลยีคหกรรมศาสตร์</option>
-              <option value="คณะศิลปกรรมศาสตร์">คณะศิลปกรรมศาสตร์</option>
-              <option value="คณะเทคโนโลยีการเกษตร">คณะเทคโนโลยีการเกษตร</option>
-              <option value="คณะครุศาสตร์อุตสาหกรรม">คณะครุศาสตร์อุตสาหกรรม</option>
-              <option value="คณะสถาปัตยกรรมศาสตร์">คณะสถาปัตยกรรมศาสตร์</option>
-              <option value="คณะวิทยาศาสตร์และเทคโนโลยี">คณะวิทยาศาสตร์และเทคโนโลยี</option>
-              <option value="คณะเทคโนโลยีสื่อสารมวลชน">คณะเทคโนโลยีสื่อสารมวลชน</option>
-              <option value="คณะศิลปศาสตร์">คณะศิลปศาสตร์</option>
-              <option value="คณะพยาบาลศาสตร์">คณะพยาบาลศาสตร์</option>
-              <option value="คณะการแพทย์บูรณาการ">คณะการแพทย์บูรณาการ</option>
-            </select>
+            <select id="s_faculty"><option value="">-- เลือกคณะ --</option><option value="คณะวิศวกรรมศาสตร์">คณะวิศวกรรมศาสตร์</option><option value="คณะบริหารธุรกิจ">คณะบริหารธุรกิจ</option><option value="คณะเทคโนโลยีคหกรรมศาสตร์">คณะเทคโนโลยีคหกรรมศาสตร์</option><option value="คณะศิลปกรรมศาสตร์">คณะศิลปกรรมศาสตร์</option><option value="คณะเทคโนโลยีการเกษตร">คณะเทคโนโลยีการเกษตร</option><option value="คณะครุศาสตร์อุตสาหกรรม">คณะครุศาสตร์อุตสาหกรรม</option><option value="คณะสถาปัตยกรรมศาสตร์">คณะสถาปัตยกรรมศาสตร์</option><option value="คณะวิทยาศาสตร์และเทคโนโลยี">คณะวิทยาศาสตร์และเทคโนโลยี</option><option value="คณะเทคโนโลยีสื่อสารมวลชน">คณะเทคโนโลยีสื่อสารมวลชน</option><option value="คณะศิลปศาสตร์">คณะศิลปศาสตร์</option><option value="คณะพยาบาลศาสตร์">คณะพยาบาลศาสตร์</option><option value="คณะการแพทย์บูรณาการ">คณะการแพทย์บูรณาการ</option></select>
           </div>
           <div class="form-group">
             <label>ภาควิชา *</label>
-            <select id="s_dept">
-              <option value="">-- เลือกภาควิชา --</option>
-              <option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option>
-              <option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option>
-              <option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option>
-              <option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option>
-              <option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option>
-              <option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option>
-              <option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม</option>
-              <option value="ภาควิชาวิศวกรรมวัสดุและโลหการ">ภาควิชาวิศวกรรมวัสดุและโลหการ</option>
-              <option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option>
-              <option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option>
-            </select>
+            <select id="s_dept"><option value="">-- เลือกภาควิชา --</option><option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option><option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option><option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option><option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option><option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option><option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option><option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม</option><option value="ภาควิชาวิศวกรรมวัสดุและโลหการ">ภาควิชาวิศวกรรมวัสดุและโลหการ</option><option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option><option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option></select>
           </div>
         </div>
-
         <div class="form-group"><label>วัตถุประสงค์เพื่อ *</label><input type="text" id="s_purpose" required></div>
-        
-        <!-- ซ่อน/แสดง ชื่ออาจารย์ (แสดงเฉพาะกลุ่มที่กำหนด) -->
         <div id="s_advisor_container" class="hidden">
           <div class="form-group">
             <label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label>
-            <select id="s_advisor" onchange="toggleScanAdvisor()">
-              <option value="">-- เลือกอาจารย์ --</option>
-              <option value="รศ.ดร.ไชยยันต์ ไชยยะ">รศ.ดร.ไชยยันต์ ไชยยะ</option>
-              <option value="รศ.ดร.ศศิรดี จันทสี">รศ.ดร.ศศิรดี จันทสี</option>
-              <option value="รศ.ดร.วีรินทร์ดา เมนส์">รศ.ดร.วีรินทร์ดา เมนส์</option>
-              <option value="รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย">รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย</option>
-              <option value="รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม">รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม</option>
-              <option value="ผศ.ดร.รินลดา สิริแสงสว่าง">ผศ.ดร.รินลดา สิริแสงสว่าง</option>
-              <option value="ผศ.ยรรยง สุขคล้าย">ผศ.ยรรยง สุขคล้าย</option>
-              <option value="รศ.ศราวุธ จิตต์พินิจ">รศ.ศราวุธ จิตต์พินิจ</option>
-              <option value="รศ.ดร.วีราภรณ์ ผิวสอาด">รศ.ดร.วีราภรณ์ ผิวสอาด</option>
-              <option value="ผศ.ดร.ชัยภพ ศิระวรกุล">ผศ.ดร.ชัยภพ ศิระวรกุล</option>
-              <option value="อาจารย์พุทธิพร เทียมสินสังวร">อาจารย์พุทธิพร เทียมสินสังวร</option>
-              <option value="อาจารย์นวพร เพิ่มสมบัติ">อาจารย์นวพร เพิ่มสมบัติ</option>
-              <option value="อื่นๆ">อื่นๆ</option>
-            </select>
+            <select id="s_advisor" onchange="toggleScanAdvisor()"><option value="">-- เลือกอาจารย์ --</option><option value="รศ.ดร.ไชยยันต์ ไชยยะ">รศ.ดร.ไชยยันต์ ไชยยะ</option><option value="รศ.ดร.ศศิรดี จันทสี">รศ.ดร.ศศิรดี จันทสี</option><option value="รศ.ดร.วีรินทร์ดา เมนส์">รศ.ดร.วีรินทร์ดา เมนส์</option><option value="รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย">รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย</option><option value="รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม">รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม</option><option value="ผศ.ดร.รินลดา สิริแสงสว่าง">ผศ.ดร.รินลดา สิริแสงสว่าง</option><option value="ผศ.ยรรยง สุขคล้าย">ผศ.ยรรยง สุขคล้าย</option><option value="รศ.ศราวุธ จิตต์พินิจ">รศ.ศราวุธ จิตต์พินิจ</option><option value="รศ.ดร.วีราภรณ์ ผิวสอาด">รศ.ดร.วีราภรณ์ ผิวสอาด</option><option value="ผศ.ดร.ชัยภพ ศิระวรกุล">ผศ.ดร.ชัยภพ ศิระวรกุล</option><option value="อาจารย์พุทธิพร เทียมสินสังวร">อาจารย์พุทธิพร เทียมสินสังวร</option><option value="อาจารย์นวพร เพิ่มสมบัติ">อาจารย์นวพร เพิ่มสมบัติ</option><option value="อื่นๆ">อื่นๆ</option></select>
           </div>
           <div id="s_other_advisor_div" class="form-group hidden"><label>ระบุชื่ออาจารย์</label><input type="text" id="s_otherAdvisor"></div>
         </div>
-
         <div class="form-group">
           <label>มีความประสงค์ขอสแกนลายนิ้วมือ (เลือกได้มากกว่า 1 ข้อ) *</label>
           <div class="checkbox-group">
@@ -283,12 +255,7 @@
             <label><input type="checkbox" name="s_doors" value="ห้องปฏิบัติการ ChE 107 ประตู 2"> ห้องปฏิบัติการ ChE 107 ประตู 2</label>
           </div>
         </div>
-        
-        <div id="s_evidence_div" class="form-group hidden">
-          <label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (หนังสือบันทึกข้อความ)</label>
-          <input type="file" id="s_evidenceFile" accept="image/*">
-        </div>
-
+        <div id="s_evidence_div" class="form-group hidden"><label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (ถ้ามี)</label><input type="file" id="s_evidenceFile" accept="image/*"></div>
         <button type="submit" id="btnSubmitScan" class="btn-main" style="background-color: #e67e22;"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอสแกนนิ้ว</button>
       </form>
       <div id="scanSuccess" class="hidden" style="text-align: center; padding: 20px 0;"><i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745;"></i><h3>ส่งคำขอเรียบร้อย!</h3><div id="showTicketId_SCAN" style="font-weight: bold; font-size: 20px; margin-top: 10px;"></div></div>
@@ -313,8 +280,6 @@
       <div id="searchView">
         <div class="search-section"><input type="text" id="ticketInput" class="search-input" placeholder="กรอก Ticket ID (เช่น ROOM-xxxx หรือ SCAN-xxxx)"><button class="btn-search" onclick="fetchTicketData()"><i class="fa-solid fa-search"></i> ค้นหา</button></div>
       </div>
-      
-      <!-- โซนแสดงผลเมื่อเป็นฟอร์มขอสแกนนิ้ว -->
       <div id="scanDetailView" class="hidden">
         <h4 style="margin-bottom: 15px; color: #e67e22;"><i class="fa-solid fa-fingerprint"></i> ข้อมูลการขอสแกนลายนิ้วมือ</h4>
         <div class="detail-row"><span class="detail-label">รหัสอ้างอิง:</span> <span id="vs_id"></span></div>
@@ -325,8 +290,6 @@
         <div class="detail-row" style="margin-top: 15px;"><span class="detail-label">การอนุมัติ (อาจารย์):</span><br><span id="vs_advisor_status" class="status-badge"></span></div>
         <div class="detail-row"><span class="detail-label">สถานะ (แอดมิน):</span><br><span id="vs_admin_status" class="status-badge"></span></div>
       </div>
-      
-      <!-- โซนแสดงผลเมื่อเป็นฟอร์มขอใช้ห้องเรียน -->
       <div id="roomDetailView" class="hidden">
         <h4 style="margin-bottom: 15px; color: #9b59b6;"><i class="fa-solid fa-chalkboard-user"></i> ข้อมูลการขอใช้ห้องเรียน</h4>
         <div class="detail-row"><span class="detail-label">รหัสอ้างอิง:</span> <span id="vr_id"></span></div>
@@ -345,7 +308,7 @@
   </div>
 
   <script>
-    // URL API สำหรับ Web App (ต้องแก้ไขเมื่อสร้างสคริปต์ใหม่)
+    // ⚠️ ต้องวาง URL ของ Web App ใหม่ที่นี่
     const API_URL = "https://script.google.com/macros/s/AKfycbwGdBVo8qYjDg1xObvINUt-KJCfr-0bVNZFJ74czq7bfHitL3c-ct2U7hkjCktQ5L7x/exec"; 
 
     function openModal(id) {
@@ -362,21 +325,17 @@
     }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // Toggle Fields ฝั่งสแกนนิ้ว
+    // Toggle Fields
     function toggleScanUserFields() { 
       const val = document.getElementById('s_userType').value; 
       document.getElementById('s_student_fields').classList.toggle('hidden', val !== 'นักศึกษา ป.ตรี'); 
       document.getElementById('s_other_user_div').classList.toggle('hidden', val !== 'อื่นๆ'); 
-      
       const showDeptFac = val !== 'อื่นๆ' && val !== '';
       document.getElementById('s_dept_faculty_div').classList.toggle('hidden', !showDeptFac);
-      document.getElementById('s_faculty').required = showDeptFac;
-      document.getElementById('s_dept').required = showDeptFac;
-      
+      document.getElementById('s_faculty').required = showDeptFac; document.getElementById('s_dept').required = showDeptFac;
       const reqAdvisor = ['นักศึกษา ป.ตรี', 'นักศึกษา ป.โท', 'นักศึกษา ป.เอก', 'ผู้ช่วยนักวิจัย'].includes(val);
       document.getElementById('s_advisor_container').classList.toggle('hidden', !reqAdvisor);
       document.getElementById('s_advisor').required = reqAdvisor;
-      
       toggleScanAdvisor();
     }
     function toggleScanAdvisor() { 
@@ -387,7 +346,6 @@
       document.getElementById('s_evidence_div').classList.toggle('hidden', !isOther); 
     }
     
-    // Toggle Fields ฝั่งขอห้องเรียน
     function toggleRoomUserFields() { const val = document.getElementById('r_userType').value; document.getElementById('r_student_fields').classList.toggle('hidden', val !== 'นักศึกษา ป.ตรี'); document.getElementById('r_other_user_div').classList.toggle('hidden', val !== 'อื่นๆ'); }
     function toggleRoomAdvisor() { const val = document.getElementById('r_advisor').value; document.getElementById('r_other_advisor_div').classList.toggle('hidden', val !== 'อื่นๆ'); document.getElementById('r_evidence_div').classList.toggle('hidden', val !== 'อื่นๆ'); }
 
@@ -404,17 +362,14 @@
     async function submitScanForm(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmitScan'); 
-      
       const doors = Array.from(document.querySelectorAll('input[name="s_doors"]:checked')).map(cb => "- " + cb.value).join('\n');
       if(!doors) { alert("กรุณาเลือกประตูลายนิ้วมืออย่างน้อย 1 บาน"); return; }
       
       btn.innerHTML = 'กำลังส่งข้อมูล...'; btn.disabled = true;
 
       let uType = document.getElementById('s_userType').value; if (uType === 'อื่นๆ') uType = document.getElementById('s_otherUser').value;
-      
       let faculty = document.getElementById('s_faculty').value; let dept = document.getElementById('s_dept').value;
       if (document.getElementById('s_dept_faculty_div').classList.contains('hidden')) { faculty = "-"; dept = "-"; }
-      
       let adv = document.getElementById('s_advisor').value; if (adv === 'อื่นๆ') adv = document.getElementById('s_otherAdvisor').value;
       if (document.getElementById('s_advisor_container').classList.contains('hidden')) { adv = "-"; }
 
@@ -501,6 +456,110 @@
       else if (currentAdmin === "รับทราบ/ดำเนินการแล้ว") {
         adminBadge.innerHTML = "รับทราบ/ดำเนินการแล้ว"; adminBadge.style.backgroundColor = "#28a745"; adminBadge.style.color = "#ffffff"; 
       } else { adminBadge.innerHTML = currentAdmin; adminBadge.style.backgroundColor = "#6c757d"; adminBadge.style.color = "#ffffff"; }
+    }
+
+    /* =======================================================
+       ฟังก์ชันปฏิทินแบบ Custom Grid
+       ======================================================= */
+    let currentDate = new Date();
+    let calendarEvents = [];
+
+    async function openCalendarModal() {
+      document.getElementById('calendarModal').style.display = 'flex';
+      document.getElementById('calendarGrid').classList.add('hidden');
+      document.getElementById('calendarLoading').style.display = 'block';
+      
+      try {
+        const res = await fetch(API_URL + "?action=calendar");
+        const data = await res.json();
+        if (data.success) {
+          calendarEvents = data.events;
+        }
+      } catch (e) {
+        console.error("Calendar Load Error", e);
+      }
+      
+      document.getElementById('calendarLoading').style.display = 'none';
+      document.getElementById('calendarGrid').classList.remove('hidden');
+      renderCalendar();
+    }
+
+    function changeMonth(step) {
+      currentDate.setMonth(currentDate.getMonth() + step);
+      renderCalendar();
+    }
+
+    // แปลง Text เวลา (เช่น "2026-09-02 เวลา 08:30 น.") เป็น Date / Float Hour
+    function parseTimeStr(str) {
+      const parts = str.split(' เวลา ');
+      if(parts.length < 2) return { dateStr: str, hour: 0 };
+      const dStr = parts[0];
+      const tStr = parts[1].replace(' น.', '');
+      return { dateStr: dStr, hour: parseFloat(tStr.replace(':', '.')) };
+    }
+
+    function getEventClass(fromStr, toStr, timeSlot) {
+      if (timeSlot === "นอกเวลาราชการ") return "event-outside";
+      
+      const from = parseTimeStr(fromStr);
+      const to = parseTimeStr(toStr);
+      
+      if (from.hour >= 16.30) return "event-outside";
+      if (to.hour <= 12.30) return "event-morning"; // เช้า (จบก่อนเที่ยงครึ่ง)
+      if (from.hour >= 12.00) return "event-afternoon"; // บ่าย (เริ่มเที่ยงเป็นต้นไป)
+      
+      return "event-full"; // คร่อมกลางวัน (เต็มวัน)
+    }
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+      
+      document.getElementById('monthYearDisplay').innerText = `${thaiMonths[month]} ${year + 543}`;
+      
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      
+      const grid = document.getElementById('calendarGrid');
+      // ลบกริดวันที่เก่าออกทั้งหมด (เก็บเฉพาะหัววัน จ-อา)
+      grid.innerHTML = '<div class="cal-header">อา.</div><div class="cal-header">จ.</div><div class="cal-header">อ.</div><div class="cal-header">พ.</div><div class="cal-header">พฤ.</div><div class="cal-header">ศ.</div><div class="cal-header">ส.</div>';
+      
+      // ช่องว่างก่อนเริ่มเดือน
+      for (let i = 0; i < firstDay; i++) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'cal-day';
+        emptyDiv.style.backgroundColor = '#f8fafc';
+        grid.appendChild(emptyDiv);
+      }
+      
+      // สร้างช่องวันที่
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'cal-day';
+        
+        const dateSpan = document.createElement('div');
+        dateSpan.className = 'cal-date';
+        dateSpan.innerText = day;
+        dayDiv.appendChild(dateSpan);
+        
+        // เช็คว่ามีคิวห้องเรียนวันนี้ไหม
+        const targetDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        calendarEvents.forEach(ev => {
+          const fromParsed = parseTimeStr(ev.from);
+          if (fromParsed.dateStr === targetDateStr) {
+            const evClass = getEventClass(ev.from, ev.to, ev.timeSlot);
+            const evDiv = document.createElement('div');
+            evDiv.className = `cal-event ${evClass}`;
+            evDiv.innerHTML = `<b>${ev.room}</b><br>${ev.name}`;
+            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nห้อง: ${ev.room}\nเวลา: ${ev.from} - ${ev.to}`;
+            dayDiv.appendChild(evDiv);
+          }
+        });
+        
+        grid.appendChild(dayDiv);
+      }
     }
   </script>
 </body>
