@@ -45,35 +45,19 @@
     .modal-content { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     
     /* ========================================================
-       ระบบวิดีโอ (จำลองเต็มจอเมื่อกดเล่น และเคลียร์เมื่อย่อ)
+       โครงสร้างวิดีโอหลัก (แสดงผลปกติใน PC)
        ======================================================== */
     .video-wrapper { 
       position: relative;
       width: 100%; 
       padding-bottom: 56.25%; /* สัดส่วนมาตรฐาน 16:9 */
-      background: #1a202c; 
+      height: 0; 
       border-radius: 8px; 
+      background: #000; 
       margin-bottom: 15px; 
       box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
       overflow: hidden;
     }
-    
-    /* ภาพปกจำลองให้กดเล่น */
-    .video-overlay {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      cursor: pointer;
-      z-index: 5;
-      background: rgba(0,0,0,0.4);
-      transition: background 0.3s;
-    }
-    .video-overlay:hover { background: rgba(0,0,0,0.6); }
-    .video-overlay i { font-size: 50px; margin-bottom: 10px; color: #16a085; }
     
     .video-wrapper iframe { 
       position: absolute;
@@ -82,39 +66,14 @@
       z-index: 1;
     }
 
-    /* โหมดเต็มจอจำลอง */
-    .video-wrapper.fullscreen-mode {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      padding-bottom: 0;
-      z-index: 999999;
-      border-radius: 0;
-      background: #000;
-    }
-    .video-wrapper.fullscreen-mode .video-overlay { display: none; } /* ซ่อนปกตอนเต็มจอ */
-    
-    /* ปุ่มย่อจอกลับมาหน้าเดิม */
-    .minimize-btn {
-      display: none;
-      position: absolute;
-      top: 20px; left: 20px; /* ไว้ซ้ายบน ไม่ทับเมนู Drive ฝั่งขวา */
-      background: rgba(0,0,0,0.7);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.3);
-      padding: 8px 15px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      z-index: 10;
-      transition: background 0.2s;
-    }
-    .minimize-btn:hover { background: #e53e3e; }
-    .video-wrapper.fullscreen-mode .minimize-btn { display: flex; align-items: center; gap: 8px; }
+    /* ซ่อนปุ่มจำลองบนคอมพิวเตอร์เด็ดขาด */
+    .video-overlay, .minimize-btn { display: none !important; }
 
     .additional-files { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
 
-    /* ปรับแต่งสำหรับหน้าจอมือถือ */
+    /* ========================================================
+       หน้าจอมือถือ (ปรับใช้โหมดหน้าปก + เต็มจอจำลอง)
+       ======================================================== */
     @media (max-width: 600px) {
       body { padding: 15px 10px; }
       .container { padding: 20px; }
@@ -129,10 +88,52 @@
       .modal-header { padding: 12px 15px; }
       .modal-header h3 { font-size: 16px; }
       .modal-content { padding: 15px; }
-      
       .additional-files { flex-direction: column; }
       .tag { justify-content: center; text-align: center; }
-      .minimize-btn { top: 15px; left: 15px; font-size: 12px; }
+
+      /* มือถือ: แสดงหน้าปกแทนวิดีโอ (กันปุ่ม Google Drive บัง) */
+      .video-overlay.active {
+        display: flex !important;
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        cursor: pointer;
+        z-index: 5;
+        background: rgba(0,0,0,0.8);
+      }
+      .video-overlay i { font-size: 50px; margin-bottom: 10px; color: #16a085; }
+
+      /* มือถือ: เมื่อกดเล่นจะขยายวิดีโอให้เต็มจอ */
+      .video-wrapper.fullscreen-mode {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        padding-bottom: 0;
+        z-index: 999999;
+        border-radius: 0;
+        margin: 0;
+        background: #000;
+      }
+
+      /* มือถือ: แสดงปุ่มย่อจอ (ขณะเล่นวิดีโอเต็มจอ) */
+      .minimize-btn.active {
+        display: flex !important;
+        position: absolute;
+        top: 15px; left: 15px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 10;
+        align-items: center;
+        gap: 8px;
+      }
     }
   </style>
 </head>
@@ -218,17 +219,17 @@
       
       <div class="modal-content">
         
-        <!-- โซนวิดีโอ (เปลี่ยนเป็นโครงสร้าง Fake Fullscreen) -->
+        <!-- โซนวิดีโอ (รองรับระบบ Fullscreen ในมือถือ) -->
         <div id="videoWrapper" class="video-wrapper" style="display: none;">
           
-          <!-- หน้าปกให้กดเล่น -->
-          <div class="video-overlay" onclick="playFullscreenVideo()">
+          <!-- หน้าปกให้กดเล่น (ทำงานเฉพาะในโทรศัพท์) -->
+          <div id="videoOverlay" class="video-overlay" onclick="playFullscreenVideo()">
             <i class="fa-regular fa-circle-play"></i>
             <span>แตะเพื่อเล่นวิดีโอ (เต็มจอ)</span>
           </div>
 
-          <!-- ปุ่มย่อจอและหยุดเล่น -->
-          <button type="button" class="minimize-btn" onclick="exitFullscreenVideo()">
+          <!-- ปุ่มย่อจอและหยุดเล่น (ทำงานเฉพาะตอนดูเต็มจอในโทรศัพท์) -->
+          <button type="button" id="minimizeBtn" class="minimize-btn" onclick="exitFullscreenVideo()">
             <i class="fa-solid fa-compress"></i> ปิดและย่อจอ
           </button>
 
@@ -251,27 +252,41 @@
   </div>
 
   <script>
-    let currentVideoId = ""; // ตัวแปรเก็บ ID วิดีโอปัจจุบันไว้โหลดตอนกดเต็มจอ
+    let currentVideoId = ""; // เก็บ ID วิดีโอปัจจุบันเพื่อโหลดใหม่บนมือถือ
 
     function openMediaModal(title, videoId, pdfId, imageId) {
       document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-microscope" style="color: #16a085;"></i> คู่มือการใช้งาน: ${title}`;
       currentVideoId = videoId;
       
       const wrapper = document.getElementById('videoWrapper');
+      const iframe = document.getElementById('mediaFrame');
+      const overlay = document.getElementById('videoOverlay');
+      const minBtn = document.getElementById('minimizeBtn');
       const noVideoMsg = document.getElementById('noVideoMsg');
 
-      // รีเซ็ตโหมดทุกครั้งที่เปิดหน้าต่างใหม่
-      exitFullscreenVideo();
+      // รีเซ็ตโหมดการแสดงผล
+      wrapper.classList.remove('fullscreen-mode');
+      if (minBtn) minBtn.classList.remove('active');
 
       if (videoId && videoId.trim() !== "") {
         wrapper.style.display = 'block';
         noVideoMsg.style.display = 'none';
+
+        // เช็คว่าหน้าจอเป็นมือถือ (ความกว้างไม่เกิน 600px) หรือไม่
+        if (window.innerWidth <= 600) {
+          iframe.src = ""; // มือถือ: ยังไม่โหลดวิดีโอ
+          if (overlay) overlay.classList.add('active'); // โชว์หน้าปกให้กดแทน
+        } else {
+          iframe.src = `https://drive.google.com/file/d/${videoId}/preview`; // คอมพิวเตอร์: โหลดวิดีโอทันที
+          if (overlay) overlay.classList.remove('active'); // ซ่อนหน้าปก
+        }
       } else {
         wrapper.style.display = 'none';
         noVideoMsg.style.display = 'block';
+        iframe.src = "";
       }
 
-      // จัดการปุ่ม PDF และรูปภาพ
+      // จัดการแสดงปุ่ม PDF
       const btnPdf = document.getElementById('btnPdf');
       if (pdfId && pdfId.trim() !== "") {
         btnPdf.href = `https://drive.google.com/file/d/${pdfId}/view`;
@@ -280,6 +295,7 @@
         btnPdf.style.display = 'none';
       }
 
+      // จัดการแสดงปุ่มรูปภาพ
       const btnImg = document.getElementById('btnImg');
       if (imageId && imageId.trim() !== "") {
         btnImg.href = `https://drive.google.com/file/d/${imageId}/view`;
@@ -288,6 +304,7 @@
         btnImg.style.display = 'none';
       }
 
+      // ซ่อนหมวดเอกสารเพิ่มเติมถ้าไม่มีไฟล์เลย
       const extraZone = document.getElementById('extraFilesZone');
       if (!pdfId && !imageId) {
         extraZone.style.display = 'none';
@@ -298,32 +315,41 @@
       document.getElementById('mediaModal').style.display = 'flex';
     }
 
-    // ฟังก์ชันเมื่อผู้ใช้กดแตะรูปปกวิดีโอ
+    // ฟังก์ชันมือถือ: กดยืนยันเล่นวิดีโอให้เต็มจอ
     function playFullscreenVideo() {
+      if (window.innerWidth > 600) return; // ทำงานเฉพาะหน้าจอมือถือ
+      
       const wrapper = document.getElementById('videoWrapper');
       const iframe = document.getElementById('mediaFrame');
+      const overlay = document.getElementById('videoOverlay');
+      const minBtn = document.getElementById('minimizeBtn');
       
-      // ขยายกรอบให้เต็มจอโทรศัพท์
       wrapper.classList.add('fullscreen-mode');
+      overlay.classList.remove('active');
+      minBtn.classList.add('active');
       
-      // โหลดลิงก์วิดีโอเข้าไปที่ iframe ทันที
+      // ดึงวิดีโอมาเล่นหลังจากเข้าโหมดเต็มจอแล้ว
       iframe.src = `https://drive.google.com/file/d/${currentVideoId}/preview`;
     }
 
-    // ฟังก์ชันเมื่อผู้ใช้กดย่อจอ (หยุดเล่น)
+    // ฟังก์ชันมือถือ: กดย่อหน้าจอและปิดวิดีโอ
     function exitFullscreenVideo() {
       const wrapper = document.getElementById('videoWrapper');
       const iframe = document.getElementById('mediaFrame');
+      const overlay = document.getElementById('videoOverlay');
+      const minBtn = document.getElementById('minimizeBtn');
       
-      // เอาโหมดเต็มจอออก กลับมาเป็นป๊อปอัปปกติ
-      wrapper.classList.remove('fullscreen-mode');
-      
-      // เคลียร์ src ของ iframe เพื่อหยุดโหลดและหยุดเล่นวิดีโอ
-      iframe.src = "";
+      if (wrapper && wrapper.classList.contains('fullscreen-mode')) {
+         wrapper.classList.remove('fullscreen-mode');
+         if (minBtn) minBtn.classList.remove('active');
+         iframe.src = ""; // ล้างลิงก์เพื่อตัดการเล่นวิดีโอ
+         if (overlay) overlay.classList.add('active'); // นำหน้าปกกลับมาโชว์
+      }
     }
 
     function closeMediaModal() {
       document.getElementById('mediaModal').style.display = 'none';
+      document.getElementById('mediaFrame').src = ''; // ตัดการเล่น
       exitFullscreenVideo();
     }
   </script>
