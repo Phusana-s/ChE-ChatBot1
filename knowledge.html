@@ -33,7 +33,7 @@
     .open-btn { background: #1e7e34; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s; cursor: pointer; }
     .open-btn:hover { background: #155d25; }
 
-    /* Modal Styles */
+    /* Modal Styles สำหรับวิดีโอและสื่อ */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     
@@ -45,12 +45,12 @@
     .modal-content { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     
     /* ========================================================
-       วิดีโอคอนเทนเนอร์สำหรับคอมพิวเตอร์ (สัดส่วน 16:9 ปกติ)
+       วิดีโอคอนเทนเนอร์ 
        ======================================================== */
     .video-container { 
       position: relative; 
       width: 100%; 
-      padding-bottom: 56.25%; /* บังคับสัดส่วน 16:9 */
+      padding-bottom: 56.25%; /* อัตราส่วน 16:9 */
       height: 0; 
       overflow: hidden; 
       border-radius: 8px; 
@@ -58,41 +58,43 @@
       margin-bottom: 15px; 
       box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
     }
-    .video-container iframe { 
+    .video-container iframe, .video-container video { 
       position: absolute; 
       top: 0; 
       left: 0; 
       width: 100%; 
       height: 100%; 
       border: 0; 
+      object-fit: contain;
     }
     
     .additional-files { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
 
     /* ========================================================
-       วิดีโอคอนเทนเนอร์สำหรับมือถือ (เพิ่มความสูงให้ปุ่มไม่บังคลิป)
+       การปรับขนาดสำหรับหน้าจอมือถือ
        ======================================================== */
-    @media (max-width: 300px) {
-      body { padding: 7px 5px; }
-      .container { padding: 10px; }
+    @media (max-width: 600px) {
+      body { padding: 15px 10px; }
+      .container { padding: 20px; }
       .knowledge-grid { grid-template-columns: 1fr; }
       
-      .header { flex-direction: column; align-items: flex-start; gap: 6px; }
-      .header h1 { font-size: 9px; }
-      .back-btn { padding: 3px 6px; font-size: 6px; width: auto; align-self: flex-start; }
+      .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .header h1 { font-size: 18px; }
+      .back-btn { padding: 6px 12px; font-size: 12px; width: auto; align-self: flex-start; }
       
-      .modal-overlay { padding: 5px; }
-      .modal-box { max-height: 50vh; border-radius: 5px; }
-      .modal-header { padding: 6px 7px; }
-      .modal-header h3 { font-size: 8px; }
-      .modal-content { padding: 7px; }
+      .modal-overlay { padding: 10px; }
+      .modal-box { max-height: 95vh; border-radius: 10px; }
+      .modal-header { padding: 12px 15px; }
+      .modal-header h3 { font-size: 16px; }
+      .modal-content { padding: 15px; }
       
-      /* ปรับแต่งความสูงกล่องวิดีโอในหน้าจอมือถือ */
+      /* ให้กล่องวิดีโอเป็น 16:9 พอดีจอ ไม่เกิดขอบดำหนาเกินไป */
       .video-container { 
-        padding-bottom: 0; /* ยกเลิกสัดส่วน 16:9 */
-        height: 320px; /* บังคับความสูงคงที่ เพื่อสร้างพื้นที่ว่าง (ขอบดำ) ให้แถบปุ่ม Google Drive ไปอยู่ด้านล่าง */
+        padding-bottom: 56.25%; 
+        height: 0; 
         border-radius: 6px; 
         margin-bottom: 10px; 
+        display: block !important;
       }
       
       .additional-files { flex-direction: column; }
@@ -182,9 +184,9 @@
       
       <div class="modal-content">
         
-        <!-- โซนวิดีโอ (ใช้ iframe เพื่อความเสถียรของวิดีโอขนาดใหญ่) -->
+        <!-- โซนวิดีโอ -->
         <div id="videoZone" class="video-container" style="display: none;">
-          <!-- แท็ก iframe จะถูกใส่เข้ามาผ่าน JavaScript -->
+          <!-- JavaScript จะดึงแท็กวิดีโอมาใส่ตรงนี้ตามอุปกรณ์ที่ใช้งาน -->
         </div>
         
         <div id="noVideoMsg" style="display: none; text-align: center; color: #718096; padding: 30px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 15px;">
@@ -211,8 +213,19 @@
 
       // ตรวจสอบว่ามี Video ID หรือไม่
       if (videoId && videoId.trim() !== "") {
-        // กลับมาใช้ iframe เพื่อความเสถียร แต่จะได้อานิสงส์จาก CSS กล่องสูง ทำให้ปุ่มไม่บังวิดีโอ
-        videoZone.innerHTML = `<iframe id="mediaFrame" src="https://drive.google.com/file/d/${videoId}/preview" allow="autoplay; fullscreen; playsinline" allowfullscreen></iframe>`;
+        // แยกระบบการเล่น: มือถือใช้ Native HTML5 Video / คอมพิวเตอร์ใช้ Iframe
+        if (window.innerWidth <= 768) {
+          // โหมดมือถือ: ใช้แท็ก <video> เพื่อแก้ปัญหาปุ่มซ้อน และขจัด UI ส่วนเกินของ Google
+          videoZone.innerHTML = `
+            <video controls playsinline preload="metadata">
+              <source src="https://drive.google.com/uc?export=download&id=${videoId}" type="video/mp4">
+              เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
+            </video>`;
+        } else {
+          // โหมดคอมพิวเตอร์: ใช้ Iframe ปกติ
+          videoZone.innerHTML = `<iframe src="https://drive.google.com/file/d/${videoId}/preview" allow="autoplay; fullscreen; playsinline" allowfullscreen></iframe>`;
+        }
+        
         videoZone.style.display = 'block';
         noVideoMsg.style.display = 'none';
       } else {
@@ -252,7 +265,7 @@
 
     function closeMediaModal() {
       document.getElementById('mediaModal').style.display = 'none';
-      // ล้าง iframe ทิ้ง เพื่อให้วิดีโอหยุดเล่นและหยุดโหลดทันที
+      // ล้างวิดีโอทิ้ง เพื่อให้หยุดเล่นและหยุดโหลดทันที
       document.getElementById('videoZone').innerHTML = '';
     }
   </script>
