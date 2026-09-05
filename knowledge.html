@@ -33,7 +33,7 @@
     .open-btn { background: #1e7e34; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s; cursor: pointer; }
     .open-btn:hover { background: #155d25; }
 
-    /* Modal Styles สำหรับวิดีโอและสื่อ */
+    /* Modal Styles */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     
@@ -45,12 +45,12 @@
     .modal-content { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     
     /* ========================================================
-       วิดีโอคอนเทนเนอร์ 
+       วิดีโอคอนเทนเนอร์ (สัดส่วน 16:9 พอดีจอทุกอุปกรณ์)
        ======================================================== */
     .video-container { 
       position: relative; 
       width: 100%; 
-      padding-bottom: 56.25%; /* อัตราส่วน 16:9 */
+      padding-bottom: 56.25%; /* อัตราส่วน 16:9 มาตรฐาน YouTube */
       height: 0; 
       overflow: hidden; 
       border-radius: 8px; 
@@ -69,9 +69,7 @@
     
     .additional-files { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
 
-    /* ========================================================
-       การปรับแต่งพิเศษสำหรับหน้าจอมือถือ (ซ่อนแถบหัวข้อ Google Drive ที่ชอบบัง)
-       ======================================================== */
+    /* ปรับแต่งสำหรับหน้าจอมือถือ */
     @media (max-width: 600px) {
       body { padding: 15px 10px; }
       .container { padding: 20px; }
@@ -86,16 +84,6 @@
       .modal-header { padding: 12px 15px; }
       .modal-header h3 { font-size: 16px; }
       .modal-content { padding: 15px; }
-      
-      /* เทคนิคซ่อนแถบหัวข้อของ Google Drive บนมือถือโดยการขยาย iframe ให้ล้นออกด้านบนเล็กน้อย */
-      .video-container {
-        height: 240px;
-        padding-bottom: 0;
-      }
-      .video-container iframe {
-        top: -45px; 
-        height: calc(100% + 45px);
-      }
       
       .additional-files { flex-direction: column; }
       .tag { justify-content: center; text-align: center; }
@@ -112,7 +100,7 @@
     <!-- รายการเครื่องมือ -->
     <div class="knowledge-grid">
       <!-- Card: BET -->
-      <div class="tool-card" onclick="openMediaModal('BET', '1SyCkk9g4CI8aSMOq6A6HYrKSUUdcXeUF', '1YfCdO-67YWMdG7FNtdiQE11rGYQ0WxjK', '')">
+      <div class="tool-card" onclick="openMediaModal('BET', '4Mr0CHt0uG8', '1YfCdO-67YWMdG7FNtdiQE11rGYQ0WxjK', '')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-chart-area"></i></div>
           <div>
@@ -158,7 +146,7 @@
       </div>
 
       <!-- Card: TGA -->
-      <div class="tool-card" onclick="openMediaModal('TGA', '', '1qkCLL8mSvVd7gUnrRwjElbkJhPx9aked', '1iVAe_2LkIJi-6dNlf4ChR5sp-C0r9Svb')">
+      <div class="tool-card" onclick="openMediaModal('TGA', 'ใส่_ID_YOUTUBE_TGA_ตรงนี้', '', '1iVAe_2LkIJi-6dNlf4ChR5sp-C0r9Svb')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-temperature-high"></i></div>
           <div>
@@ -185,16 +173,16 @@
       
       <div class="modal-content">
         
-        <!-- โซนวิดีโอ -->
+        <!-- โซนวิดีโอ YouTube -->
         <div id="videoZone" class="video-container" style="display: none;">
-          <iframe id="mediaFrame" src="" allow="autoplay; fullscreen; playsinline" allowfullscreen></iframe>
+          <!-- แท็ก iframe จะถูกใส่เข้ามาผ่าน JavaScript พร้อมลิงก์ YouTube -->
         </div>
         
         <div id="noVideoMsg" style="display: none; text-align: center; color: #718096; padding: 30px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 15px;">
           <i class="fa-solid fa-video-slash" style="font-size: 30px; margin-bottom: 10px; color: #cbd5e1;"></i><br>ไม่มีไฟล์วิดีโอสำหรับเครื่องมือนี้
         </div>
 
-        <!-- โซนปุ่มเอกสารเพิ่มเติม -->
+        <!-- โซนปุ่มเอกสารเพิ่มเติม (ยังใช้ลิงก์ Google Drive ตามเดิม) -->
         <div id="extraFilesZone" class="additional-files">
           <span style="font-size: 13px; font-weight: bold; color: #4a5568; width: 100%; margin-bottom: 5px;">เอกสารเพิ่มเติม:</span>
           <a id="btnPdf" href="#" target="_blank" class="tag tag-pdf" style="display: none; font-size: 14px; padding: 10px 15px;"><i class="fa-regular fa-file-pdf"></i> เปิดอ่านคู่มือ PDF</a>
@@ -209,22 +197,22 @@
     function openMediaModal(title, videoId, pdfId, imageId) {
       document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-microscope" style="color: #16a085;"></i> คู่มือการใช้งาน: ${title}`;
       
-      const iframe = document.getElementById('mediaFrame');
       const videoZone = document.getElementById('videoZone');
       const noVideoMsg = document.getElementById('noVideoMsg');
 
-      // ตรวจสอบว่ามี Video ID หรือไม่
+      // ตรวจสอบว่ามี Video ID ของ YouTube หรือไม่
       if (videoId && videoId.trim() !== "") {
-        iframe.src = `https://drive.google.com/file/d/${videoId}/preview`;
+        // ใช้ลิงก์ Embed ของ YouTube (rel=0 เพื่อไม่ให้แสดงวิดีโอแนะนำช่องอื่นตอนเล่นจบ)
+        videoZone.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
         videoZone.style.display = 'block';
         noVideoMsg.style.display = 'none';
       } else {
-        iframe.src = "";
+        videoZone.innerHTML = '';
         videoZone.style.display = 'none';
         noVideoMsg.style.display = 'block';
       }
 
-      // จัดการปุ่ม PDF
+      // จัดการปุ่ม PDF (ใช้ Google Drive)
       const btnPdf = document.getElementById('btnPdf');
       if (pdfId && pdfId.trim() !== "") {
         btnPdf.href = `https://drive.google.com/file/d/${pdfId}/view`;
@@ -233,7 +221,7 @@
         btnPdf.style.display = 'none';
       }
 
-      // จัดการปุ่มรูปภาพ
+      // จัดการปุ่มรูปภาพ (ใช้ Google Drive)
       const btnImg = document.getElementById('btnImg');
       if (imageId && imageId.trim() !== "") {
         btnImg.href = `https://drive.google.com/file/d/${imageId}/view`;
@@ -255,8 +243,8 @@
 
     function closeMediaModal() {
       document.getElementById('mediaModal').style.display = 'none';
-      // ล้างค่า src เพื่อให้วิดีโอหยุดเล่นทันทีที่ปิดป๊อปอัป
-      document.getElementById('mediaFrame').src = '';
+      // ล้าง iframe ทิ้ง เพื่อให้วิดีโอหยุดเล่นและหยุดโหลดทันที
+      document.getElementById('videoZone').innerHTML = '';
     }
   </script>
 </body>
