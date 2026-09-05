@@ -33,7 +33,7 @@
     .open-btn { background: #1e7e34; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s; cursor: pointer; }
     .open-btn:hover { background: #155d25; }
 
-    /* Modal Styles */
+    /* Modal Styles สำหรับวิดีโอและสื่อ */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     
@@ -44,11 +44,13 @@
     
     .modal-content { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     
-    /* Video Container Styles (สำหรับคอมพิวเตอร์) */
+    /* ========================================================
+       วิดีโอคอนเทนเนอร์ (สำหรับคอมพิวเตอร์)
+       ======================================================== */
     .video-container { 
       position: relative; 
       width: 100%; 
-      padding-bottom: 56.25%; 
+      padding-bottom: 56.25%; /* อัตราส่วน 16:9 */
       height: 0; 
       overflow: hidden; 
       border-radius: 8px; 
@@ -64,29 +66,12 @@
       height: 100%; 
       border: 0; 
     }
-
-    /* ปุ่มสำหรับเล่นวิดีโอบนมือถือ */
-    .mobile-play-btn {
-      background-color: #e67e22; 
-      color: white; 
-      padding: 15px; 
-      border-radius: 8px; 
-      font-size: 15px; 
-      font-weight: bold; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      gap: 10px; 
-      width: 100%; 
-      text-decoration: none; 
-      margin-bottom: 15px;
-      box-shadow: 0 4px 6px rgba(230, 126, 34, 0.2);
-    }
-    .mobile-play-btn:hover { background-color: #d35400; }
     
     .additional-files { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
 
-    /* ปรับขนาดมือถือ */
+    /* ========================================================
+       การปรับขนาดสำหรับหน้าจอมือถือ (ป้องกันปุ่มบังวิดีโอ)
+       ======================================================== */
     @media (max-width: 600px) {
       body { padding: 15px 10px; }
       .container { padding: 20px; }
@@ -102,8 +87,24 @@
       .modal-header h3 { font-size: 16px; }
       .modal-content { padding: 15px; }
       
+      /* ปรับความสูงกล่องวิดีโอในหน้าจอมือถือแนวตั้ง */
+      .video-container { 
+        padding-bottom: 0; 
+        height: 280px; /* บังคับความสูงคงที่ เพื่อให้มีพื้นที่เหลือสำหรับปุ่ม Play */
+        border-radius: 6px; 
+        margin-bottom: 10px; 
+      }
+      
       .additional-files { flex-direction: column; }
       .tag { justify-content: center; text-align: center; }
+    }
+
+    /* ปรับขนาดกล่องวิดีโอเมื่อหมุนมือถือเป็น "แนวนอน" */
+    @media (max-width: 900px) and (orientation: landscape) {
+      .video-container {
+        padding-bottom: 0;
+        height: 65vh; /* จำกัดความสูงไม่ให้ล้นทะลุจอ เพื่อไม่ให้ปุ่มขยายใหญ่จนบัง */
+      }
     }
   </style>
 </head>
@@ -187,17 +188,13 @@
         <button class="close-modal" onclick="closeMediaModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       
+      <!-- โซนเนื้อหาที่เลื่อนได้ -->
       <div class="modal-content">
         
-        <!-- โซนวิดีโอสำหรับคอมพิวเตอร์ -->
+        <!-- โซนวิดีโอ (Iframe Google Drive ดั้งเดิม) -->
         <div id="videoZone" class="video-container" style="display: none;">
           <iframe id="mediaFrame" src="" allow="autoplay; fullscreen; playsinline" allowfullscreen></iframe>
         </div>
-
-        <!-- ปุ่มกดวิดีโอสำหรับโทรศัพท์มือถือ -->
-        <a id="btnMobileVideo" href="#" target="_blank" class="mobile-play-btn" style="display: none;">
-          <i class="fa-solid fa-circle-play" style="font-size: 20px;"></i> กดวิดีโอเพื่อเล่น
-        </a>
         
         <div id="noVideoMsg" style="display: none; text-align: center; color: #718096; padding: 30px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 15px;">
           <i class="fa-solid fa-video-slash" style="font-size: 30px; margin-bottom: 10px; color: #cbd5e1;"></i><br>ไม่มีไฟล์วิดีโอสำหรับเครื่องมือนี้
@@ -220,29 +217,16 @@
       
       const iframe = document.getElementById('mediaFrame');
       const videoZone = document.getElementById('videoZone');
-      const btnMobileVideo = document.getElementById('btnMobileVideo');
       const noVideoMsg = document.getElementById('noVideoMsg');
 
       // ตรวจสอบว่ามี Video ID หรือไม่
       if (videoId && videoId.trim() !== "") {
-        if (window.innerWidth <= 600) {
-          // โหมดมือถือ: ซ่อน Iframe แล้วแสดงปุ่มกดเล่น
-          iframe.src = "";
-          videoZone.style.display = 'none';
-          btnMobileVideo.href = `https://drive.google.com/file/d/${videoId}/view`;
-          btnMobileVideo.style.display = 'flex';
-          noVideoMsg.style.display = 'none';
-        } else {
-          // โหมดคอมพิวเตอร์: แสดง Iframe ปกติ
-          iframe.src = `https://drive.google.com/file/d/${videoId}/preview`;
-          videoZone.style.display = 'block';
-          btnMobileVideo.style.display = 'none';
-          noVideoMsg.style.display = 'none';
-        }
+        iframe.src = `https://drive.google.com/file/d/${videoId}/preview`;
+        videoZone.style.display = 'block';
+        noVideoMsg.style.display = 'none';
       } else {
         iframe.src = "";
         videoZone.style.display = 'none';
-        btnMobileVideo.style.display = 'none';
         noVideoMsg.style.display = 'block';
       }
 
