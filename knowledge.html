@@ -33,7 +33,7 @@
     .open-btn { background: #1e7e34; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s; cursor: pointer; }
     .open-btn:hover { background: #155d25; }
 
-    /* Modal Styles */
+    /* Modal Styles สำหรับวิดีโอและสื่อ */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     
@@ -45,33 +45,31 @@
     .modal-content { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     
     /* ========================================================
-       แก้ไขส่วนการแสดงผลวิดีโอแบบ Native HTML5 (ปรับขนาดพอดี)
+       แก้ไขส่วนการแสดงผลวิดีโอให้รองรับโทรศัพท์ทั้งแนวตั้งและแนวนอน
        ======================================================== */
     .video-container { 
-      position: relative; 
       width: 100%; 
-      padding-bottom: 56.25%; /* บังคับสัดส่วน 16:9 ให้ได้หน้าจอกว้างพอดีเป๊ะ */
-      height: 0; 
-      overflow: hidden; 
+      aspect-ratio: 16 / 9; 
+      min-height: 280px; /* บังคับความสูงขั้นต่ำให้เห็นปุ่ม Play ในแนวตั้ง */
+      max-height: 65vh;  /* บังคับไม่ให้ล้นหน้าจอเกินไปในแนวนอน */
       border-radius: 8px; 
       background: #000; 
       margin-bottom: 15px; 
       box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    /* ให้วิดีโอขยายเต็มกรอบคอนเทนเนอร์ 16:9 */
-    .video-container video, .video-container iframe { 
-      position: absolute; 
-      top: 0; 
-      left: 0; 
+    .video-container iframe { 
       width: 100%; 
       height: 100%; 
       border: 0; 
-      object-fit: contain; /* ไม่ให้วิดีโอยืดผิดส่วน */
-      outline: none;
     }
     
     .additional-files { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
 
+    /* ปรับแต่งสำหรับหน้าจอมือถือ */
     @media (max-width: 600px) {
       body { padding: 15px 10px; }
       .container { padding: 20px; }
@@ -103,7 +101,7 @@
     <!-- รายการเครื่องมือ -->
     <div class="knowledge-grid">
       <!-- Card: BET -->
-      <div class="tool-card" onclick="openMediaModal('BET', '1SyCkk9g4CI8aSMOq6A6HYrKSUUdcXeUF', '1YfCdO-67YWMdG7FNtdiQE11rGYQ0WxjK')">
+      <div class="tool-card" onclick="openMediaModal('BET', '1SyCkk9g4CI8aSMOq6A6HYrKSUUdcXeUF', '1YfCdO-67YWMdG7FNtdiQE11rGYQ0WxjK', '')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-chart-area"></i></div>
           <div>
@@ -119,7 +117,7 @@
       </div>
 
       <!-- Card: CHNS -->
-      <div class="tool-card" onclick="openMediaModal('CHNS', '1iSsqaH0VBrcfJ3OPpDiBVlGqUK45Wvpq')">
+      <div class="tool-card" onclick="openMediaModal('CHNS', '', '1iSsqaH0VBrcfJ3OPpDiBVlGqUK45Wvpq', '')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-dna"></i></div>
           <div>
@@ -134,7 +132,7 @@
       </div>
 
       <!-- Card: FTIR -->
-      <div class="tool-card" onclick="openMediaModal('FTIR', '1SLB5yOagBbft73BhCDYryR8Fra7WkGBt')">
+      <div class="tool-card" onclick="openMediaModal('FTIR', '', '1SLB5yOagBbft73BhCDYryR8Fra7WkGBt', '')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-wave-square"></i></div>
           <div>
@@ -149,7 +147,7 @@
       </div>
 
       <!-- Card: TGA -->
-      <div class="tool-card" onclick="openMediaModal('TGA', '1iVAe_2LkIJi-6dNlf4ChR5sp-C0r9Svb')">
+      <div class="tool-card" onclick="openMediaModal('TGA', '', '', '1iVAe_2LkIJi-6dNlf4ChR5sp-C0r9Svb')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-temperature-high"></i></div>
           <div>
@@ -173,11 +171,12 @@
         <button class="close-modal" onclick="closeMediaModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       
+      <!-- โซนเนื้อหาที่เลื่อนได้ -->
       <div class="modal-content">
         
         <!-- โซนวิดีโอ -->
         <div id="videoZone" class="video-container" style="display: none;">
-          <!-- แท็กวิดีโอจะถูกใส่เข้ามาทาง JavaScript -->
+          <iframe id="mediaFrame" src="" allow="autoplay; fullscreen; playsinline" allowfullscreen></iframe>
         </div>
         
         <div id="noVideoMsg" style="display: none; text-align: center; color: #718096; padding: 30px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 15px;">
@@ -199,22 +198,17 @@
     function openMediaModal(title, videoId, pdfId, imageId) {
       document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-microscope" style="color: #16a085;"></i> คู่มือการใช้งาน: ${title}`;
       
+      const iframe = document.getElementById('mediaFrame');
       const videoZone = document.getElementById('videoZone');
       const noVideoMsg = document.getElementById('noVideoMsg');
 
       // ตรวจสอบว่ามี Video ID หรือไม่
       if (videoId && videoId.trim() !== "") {
-        // ใช้แท็ก <video> ดั้งเดิมของมือถือ แทน iframe ของ Google Drive
-        videoZone.innerHTML = `
-          <video controls playsinline preload="metadata">
-            <source src="https://drive.google.com/uc?export=download&id=${videoId}" type="video/mp4">
-            เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
-          </video>
-        `;
+        iframe.src = `https://drive.google.com/file/d/${videoId}/preview`;
         videoZone.style.display = 'block';
         noVideoMsg.style.display = 'none';
       } else {
-        videoZone.innerHTML = '';
+        iframe.src = "";
         videoZone.style.display = 'none';
         noVideoMsg.style.display = 'block';
       }
@@ -250,8 +244,8 @@
 
     function closeMediaModal() {
       document.getElementById('mediaModal').style.display = 'none';
-      // ล้างแท็ก <video> ทิ้ง เพื่อให้วิดีโอหยุดเล่นและหยุดโหลดทันที
-      document.getElementById('videoZone').innerHTML = '';
+      // ล้างค่า src เพื่อให้วิดีโอหยุดเล่นทันทีที่ปิดป๊อปอัป
+      document.getElementById('mediaFrame').src = '';
     }
   </script>
 </body>
