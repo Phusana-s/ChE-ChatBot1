@@ -44,9 +44,7 @@
     
     .modal-content { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     
-    /* ========================================================
-       โครงสร้างวิดีโอหลัก (แสดงผลปกติใน PC)
-       ======================================================== */
+    /* โครงสร้างวิดีโอหลัก (แสดงผลปกติใน PC) */
     .video-wrapper { 
       position: relative;
       width: 100%; 
@@ -72,7 +70,7 @@
     .additional-files { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
 
     /* ========================================================
-       หน้าจอมือถือ (ปรับใช้โหมดหน้าปก + เต็มจอจำลอง)
+       หน้าจอมือถือ (ย่อส่วนเครื่องเล่น Google Drive ให้เล็กลง)
        ======================================================== */
     @media (max-width: 600px) {
       body { padding: 15px 10px; }
@@ -91,7 +89,7 @@
       .additional-files { flex-direction: column; }
       .tag { justify-content: center; text-align: center; }
 
-      /* มือถือ: แสดงหน้าปกแทนวิดีโอ (กันปุ่ม Google Drive บัง) */
+      /* มือถือ: แสดงหน้าปกแทนวิดีโอ (ลดขนาดไอคอนให้เล็กลง) */
       .video-overlay.active {
         display: flex !important;
         position: absolute;
@@ -104,17 +102,32 @@
         z-index: 5;
         background: rgba(0,0,0,0.8);
       }
-      .video-overlay i { font-size: 50px; margin-bottom: 10px; color: #16a085; }
+      .video-overlay i { font-size: 35px; margin-bottom: 8px; color: #16a085; }
+      .video-overlay span { font-size: 12px; color: #cbd5e1; }
 
       /* มือถือ: เมื่อกดเล่นจะขยายวิดีโอให้เต็มจอ */
       .video-wrapper.fullscreen-mode {
         position: fixed;
-        top: 0; left: 0; width: 100vw; height: 100vh;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100%; height: 100%;
         padding-bottom: 0;
         z-index: 999999;
         border-radius: 0;
         margin: 0;
         background: #000;
+        overflow: hidden;
+      }
+
+      /* =========================================================
+         เทคนิคย่อขนาด Google Drive UI:
+         ขยายขนาด iframe ขึ้น 150% แล้วใช้ Scale ย่อกลับมาที่ 66.6%
+         ผลลัพธ์: UI ปุ่มและแถบควบคุมของวิดีโอจะเล็กลง 33% 
+         ========================================================= */
+      .video-wrapper.fullscreen-mode iframe {
+        width: 150% !important;
+        height: 150% !important;
+        transform: scale(0.6667);
+        transform-origin: top left;
       }
 
       /* มือถือ: แสดงปุ่มย่อจอ (ขณะเล่นวิดีโอเต็มจอ) */
@@ -125,14 +138,14 @@
         background: rgba(0,0,0,0.7);
         color: white;
         border: 1px solid rgba(255,255,255,0.3);
-        padding: 8px 15px;
+        padding: 6px 12px;
         border-radius: 20px;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: bold;
         cursor: pointer;
         z-index: 10;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
       }
     }
   </style>
@@ -219,16 +232,16 @@
       
       <div class="modal-content">
         
-        <!-- โซนวิดีโอ (รองรับระบบ Fullscreen ในมือถือ) -->
+        <!-- โซนวิดีโอ (เปลี่ยนเป็นโครงสร้าง Fake Fullscreen) -->
         <div id="videoWrapper" class="video-wrapper" style="display: none;">
           
-          <!-- หน้าปกให้กดเล่น (ทำงานเฉพาะในโทรศัพท์) -->
+          <!-- หน้าปกให้กดเล่น -->
           <div id="videoOverlay" class="video-overlay" onclick="playFullscreenVideo()">
             <i class="fa-regular fa-circle-play"></i>
             <span>แตะเพื่อเล่นวิดีโอ (เต็มจอ)</span>
           </div>
 
-          <!-- ปุ่มย่อจอและหยุดเล่น (ทำงานเฉพาะตอนดูเต็มจอในโทรศัพท์) -->
+          <!-- ปุ่มย่อจอและหยุดเล่น -->
           <button type="button" id="minimizeBtn" class="minimize-btn" onclick="exitFullscreenVideo()">
             <i class="fa-solid fa-compress"></i> ปิดและย่อจอ
           </button>
@@ -252,7 +265,7 @@
   </div>
 
   <script>
-    let currentVideoId = ""; // เก็บ ID วิดีโอปัจจุบันเพื่อโหลดใหม่บนมือถือ
+    let currentVideoId = ""; // ตัวแปรเก็บ ID วิดีโอปัจจุบันไว้โหลดตอนกดเต็มจอ
 
     function openMediaModal(title, videoId, pdfId, imageId) {
       document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-microscope" style="color: #16a085;"></i> คู่มือการใช้งาน: ${title}`;
@@ -264,29 +277,27 @@
       const minBtn = document.getElementById('minimizeBtn');
       const noVideoMsg = document.getElementById('noVideoMsg');
 
-      // รีเซ็ตโหมดการแสดงผล
-      wrapper.classList.remove('fullscreen-mode');
-      if (minBtn) minBtn.classList.remove('active');
+      // รีเซ็ตโหมดทุกครั้งที่เปิดหน้าต่างใหม่
+      exitFullscreenVideo();
 
       if (videoId && videoId.trim() !== "") {
         wrapper.style.display = 'block';
         noVideoMsg.style.display = 'none';
-
-        // เช็คว่าหน้าจอเป็นมือถือ (ความกว้างไม่เกิน 600px) หรือไม่
+        
+        // เช็คว่าหน้าจอเป็นมือถือหรือไม่
         if (window.innerWidth <= 600) {
-          iframe.src = ""; // มือถือ: ยังไม่โหลดวิดีโอ
-          if (overlay) overlay.classList.add('active'); // โชว์หน้าปกให้กดแทน
+          iframe.src = ""; // มือถือ: รอให้ผู้ใช้กดที่หน้าปกก่อน
+          if (overlay) overlay.classList.add('active'); 
         } else {
-          iframe.src = `https://drive.google.com/file/d/${videoId}/preview`; // คอมพิวเตอร์: โหลดวิดีโอทันที
-          if (overlay) overlay.classList.remove('active'); // ซ่อนหน้าปก
+          iframe.src = `https://drive.google.com/file/d/${videoId}/preview`; // คอมพิวเตอร์: โหลดวิดีโอเลย
+          if (overlay) overlay.classList.remove('active'); 
         }
       } else {
         wrapper.style.display = 'none';
         noVideoMsg.style.display = 'block';
-        iframe.src = "";
       }
 
-      // จัดการแสดงปุ่ม PDF
+      // จัดการปุ่ม PDF และรูปภาพ
       const btnPdf = document.getElementById('btnPdf');
       if (pdfId && pdfId.trim() !== "") {
         btnPdf.href = `https://drive.google.com/file/d/${pdfId}/view`;
@@ -295,7 +306,6 @@
         btnPdf.style.display = 'none';
       }
 
-      // จัดการแสดงปุ่มรูปภาพ
       const btnImg = document.getElementById('btnImg');
       if (imageId && imageId.trim() !== "") {
         btnImg.href = `https://drive.google.com/file/d/${imageId}/view`;
@@ -304,7 +314,6 @@
         btnImg.style.display = 'none';
       }
 
-      // ซ่อนหมวดเอกสารเพิ่มเติมถ้าไม่มีไฟล์เลย
       const extraZone = document.getElementById('extraFilesZone');
       if (!pdfId && !imageId) {
         extraZone.style.display = 'none';
@@ -315,24 +324,25 @@
       document.getElementById('mediaModal').style.display = 'flex';
     }
 
-    // ฟังก์ชันมือถือ: กดยืนยันเล่นวิดีโอให้เต็มจอ
+    // ฟังก์ชันเมื่อผู้ใช้กดแตะรูปปกวิดีโอ (สำหรับมือถือ)
     function playFullscreenVideo() {
-      if (window.innerWidth > 600) return; // ทำงานเฉพาะหน้าจอมือถือ
+      if (window.innerWidth > 600) return;
       
       const wrapper = document.getElementById('videoWrapper');
       const iframe = document.getElementById('mediaFrame');
       const overlay = document.getElementById('videoOverlay');
       const minBtn = document.getElementById('minimizeBtn');
       
+      // ขยายกรอบให้เต็มจอโทรศัพท์
       wrapper.classList.add('fullscreen-mode');
       overlay.classList.remove('active');
       minBtn.classList.add('active');
       
-      // ดึงวิดีโอมาเล่นหลังจากเข้าโหมดเต็มจอแล้ว
+      // โหลดลิงก์วิดีโอเข้าไปที่ iframe ทันที
       iframe.src = `https://drive.google.com/file/d/${currentVideoId}/preview`;
     }
 
-    // ฟังก์ชันมือถือ: กดย่อหน้าจอและปิดวิดีโอ
+    // ฟังก์ชันเมื่อผู้ใช้กดย่อจอ (หยุดเล่น)
     function exitFullscreenVideo() {
       const wrapper = document.getElementById('videoWrapper');
       const iframe = document.getElementById('mediaFrame');
@@ -340,16 +350,16 @@
       const minBtn = document.getElementById('minimizeBtn');
       
       if (wrapper && wrapper.classList.contains('fullscreen-mode')) {
-         wrapper.classList.remove('fullscreen-mode');
-         if (minBtn) minBtn.classList.remove('active');
-         iframe.src = ""; // ล้างลิงก์เพื่อตัดการเล่นวิดีโอ
-         if (overlay) overlay.classList.add('active'); // นำหน้าปกกลับมาโชว์
+        wrapper.classList.remove('fullscreen-mode');
+        if (minBtn) minBtn.classList.remove('active');
+        iframe.src = ""; // ล้าง iframe เพื่อตัดการเล่น
+        if (overlay) overlay.classList.add('active'); // เอาหน้าปกกลับมา
       }
     }
 
     function closeMediaModal() {
       document.getElementById('mediaModal').style.display = 'none';
-      document.getElementById('mediaFrame').src = ''; // ตัดการเล่น
+      document.getElementById('mediaFrame').src = '';
       exitFullscreenVideo();
     }
   </script>
