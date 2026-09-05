@@ -66,7 +66,7 @@
       height: 100%; 
       border: 0; 
     }
-    /* แผ่นใสสำหรับดักจับการคลิกครั้งแรกเพื่อขยายจอ */
+    /* แผ่นใสสำหรับดักจับการคลิกครั้งแรกเพื่อขยายจอ (ซ่อนเป็นค่าเริ่มต้น) */
     .video-overlay {
       position: absolute;
       top: 0;
@@ -76,6 +76,7 @@
       z-index: 5;
       cursor: pointer;
       background: transparent;
+      display: none; 
     }
 
     /* CSS สำหรับกรณีที่วิดีโอถูกขยายเต็มจอแล้ว ให้ยกเลิก Padding */
@@ -198,7 +199,7 @@
         
         <!-- โซนวิดีโอ -->
         <div id="videoZone" class="video-container" style="display: none;">
-          <!-- แผ่นใสดักจับการกดครั้งแรกเพื่อขยายเต็มจอ -->
+          <!-- แผ่นใสดักจับการกดครั้งแรกเพื่อขยายเต็มจอ (ทำงานเฉพาะบนมือถือ) -->
           <div id="videoOverlay" class="video-overlay" onclick="goFullscreenAndHide()"></div>
           <iframe id="mediaFrame" src="" allow="autoplay; fullscreen; playsinline" allowfullscreen></iframe>
         </div>
@@ -232,7 +233,13 @@
         iframe.src = `https://drive.google.com/file/d/${videoId}/preview`;
         videoZone.style.display = 'block';
         noVideoMsg.style.display = 'none';
-        overlay.style.display = 'block'; // รีเซ็ตให้แผ่นใสกลับมาทำงานทุกครั้งที่เปิดป๊อปอัปใหม่
+        
+        // เช็คขนาดหน้าจอ: ถ้าเป็นโทรศัพท์ (<= 600px) ให้แสดงแผ่นใสบังคับเต็มจอ
+        if (window.innerWidth <= 600) {
+          overlay.style.display = 'block';
+        } else {
+          overlay.style.display = 'none'; // คอมพิวเตอร์ซ่อนแผ่นใส ให้กดเล่นวิดีโอได้เลย
+        }
       } else {
         iframe.src = "";
         videoZone.style.display = 'none';
@@ -274,7 +281,7 @@
       document.getElementById('mediaFrame').src = '';
     }
 
-    // ฟังก์ชันสั่งขยายเต็มจออัตโนมัติเมื่อกดวิดีโอ
+    // ฟังก์ชันสั่งขยายเต็มจออัตโนมัติเมื่อกดวิดีโอ (ทำงานเฉพาะบนมือถือ)
     function goFullscreenAndHide() {
       const videoZone = document.getElementById('videoZone');
       const overlay = document.getElementById('videoOverlay');
