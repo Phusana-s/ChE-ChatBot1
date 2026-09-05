@@ -44,13 +44,11 @@
     
     .modal-content { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     
-    /* ========================================================
-       วิดีโอคอนเทนเนอร์สำหรับคอมพิวเตอร์ (สัดส่วน 16:9 ปกติ)
-       ======================================================== */
+    /* Video Container Styles */
     .video-container { 
       position: relative; 
       width: 100%; 
-      padding-bottom: 56.25%; /* บังคับสัดส่วน 16:9 */
+      padding-bottom: 56.25%; 
       height: 0; 
       overflow: hidden; 
       border-radius: 8px; 
@@ -58,25 +56,24 @@
       margin-bottom: 15px; 
       box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
     }
-    .video-container iframe { 
+    .video-container video, .video-container iframe { 
       position: absolute; 
       top: 0; 
       left: 0; 
       width: 100%; 
       height: 100%; 
       border: 0; 
+      object-fit: contain;
+      outline: none;
     }
     
     .additional-files { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
 
-    /* ========================================================
-       วิดีโอคอนเทนเนอร์สำหรับมือถือ (เพิ่มความสูงให้ปุ่มไม่บังคลิป)
-       ======================================================== */
+    /* ปรับขนาดมือถือ (คงรูปแบบสัดส่วนเดิมของคุณไว้) */
     @media (max-width: 600px) {
       body { padding: 15px 10px; }
       .container { padding: 20px; }
       .knowledge-grid { grid-template-columns: 1fr; }
-      
       .header { flex-direction: column; align-items: flex-start; gap: 12px; }
       .header h1 { font-size: 18px; }
       .back-btn { padding: 6px 12px; font-size: 12px; width: auto; align-self: flex-start; }
@@ -87,12 +84,14 @@
       .modal-header h3 { font-size: 16px; }
       .modal-content { padding: 15px; }
       
-      /* ปรับแต่งความสูงกล่องวิดีโอในหน้าจอมือถือ */
       .video-container { 
-        padding-bottom: 0; /* ยกเลิกสัดส่วน 16:9 */
-        height: 320px; /* บังคับความสูงคงที่ เพื่อสร้างพื้นที่ว่าง (ขอบดำ) ให้แถบปุ่ม Google Drive ไปอยู่ด้านล่าง */
+        padding-bottom: 0; 
+        height: 320px; 
         border-radius: 6px; 
         margin-bottom: 10px; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
       
       .additional-files { flex-direction: column; }
@@ -109,7 +108,6 @@
 
     <!-- รายการเครื่องมือ -->
     <div class="knowledge-grid">
-      <!-- Card: BET -->
       <div class="tool-card" onclick="openMediaModal('BET', '1SyCkk9g4CI8aSMOq6A6HYrKSUUdcXeUF', '1YfCdO-67YWMdG7FNtdiQE11rGYQ0WxjK', '')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-chart-area"></i></div>
@@ -125,7 +123,6 @@
         <button class="open-btn"><i class="fa-regular fa-circle-play"></i> เปิดดูคู่มือการใช้งาน</button>
       </div>
 
-      <!-- Card: CHNS -->
       <div class="tool-card" onclick="openMediaModal('CHNS', '', '1iSsqaH0VBrcfJ3OPpDiBVlGqUK45Wvpq', '')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-dna"></i></div>
@@ -140,7 +137,6 @@
         <button class="open-btn"><i class="fa-regular fa-circle-play"></i> เปิดดูคู่มือการใช้งาน</button>
       </div>
 
-      <!-- Card: FTIR -->
       <div class="tool-card" onclick="openMediaModal('FTIR', '', '1SLB5yOagBbft73BhCDYryR8Fra7WkGBt', '')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-wave-square"></i></div>
@@ -155,7 +151,6 @@
         <button class="open-btn"><i class="fa-regular fa-circle-play"></i> เปิดดูคู่มือการใช้งาน</button>
       </div>
 
-      <!-- Card: TGA -->
       <div class="tool-card" onclick="openMediaModal('TGA', '', '', '1iVAe_2LkIJi-6dNlf4ChR5sp-C0r9Svb')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-temperature-high"></i></div>
@@ -182,9 +177,9 @@
       
       <div class="modal-content">
         
-        <!-- โซนวิดีโอ (ใช้ iframe เพื่อความเสถียรของวิดีโอขนาดใหญ่) -->
+        <!-- โซนวิดีโอ -->
         <div id="videoZone" class="video-container" style="display: none;">
-          <!-- แท็ก iframe จะถูกใส่เข้ามาผ่าน JavaScript -->
+          <!-- แท็กวิดีโอจะถูกใส่เข้ามาทาง JavaScript -->
         </div>
         
         <div id="noVideoMsg" style="display: none; text-align: center; color: #718096; padding: 30px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 15px;">
@@ -209,12 +204,29 @@
       const videoZone = document.getElementById('videoZone');
       const noVideoMsg = document.getElementById('noVideoMsg');
 
-      // ตรวจสอบว่ามี Video ID หรือไม่
       if (videoId && videoId.trim() !== "") {
-        // กลับมาใช้ iframe เพื่อความเสถียร แต่จะได้อานิสงส์จาก CSS กล่องสูง ทำให้ปุ่มไม่บังวิดีโอ
-        videoZone.innerHTML = `<iframe id="mediaFrame" src="https://drive.google.com/file/d/${videoId}/preview" allow="autoplay; fullscreen; playsinline" allowfullscreen></iframe>`;
-        videoZone.style.display = 'block';
+        // ใช้ HTML5 Video แทรกเข้าไปในกล่องดำเดิม
+        videoZone.innerHTML = `
+          <video id="nativeVideoPlayer" controls playsinline preload="metadata">
+            <source src="https://drive.google.com/uc?export=download&id=${videoId}" type="video/mp4">
+            เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
+          </video>
+        `;
+        videoZone.style.display = 'flex';
         noVideoMsg.style.display = 'none';
+
+        // เขียนคำสั่งดักจับเมื่อมีการกด Play ให้ขยายเต็มจออัตโนมัติ
+        const videoElement = document.getElementById('nativeVideoPlayer');
+        videoElement.addEventListener('play', function() {
+          if (this.requestFullscreen) {
+            this.requestFullscreen();
+          } else if (this.webkitRequestFullscreen) { /* Safari / iOS */
+            this.webkitRequestFullscreen();
+          } else if (this.msRequestFullscreen) { /* IE11 */
+            this.msRequestFullscreen();
+          }
+        });
+
       } else {
         videoZone.innerHTML = '';
         videoZone.style.display = 'none';
@@ -252,8 +264,7 @@
 
     function closeMediaModal() {
       document.getElementById('mediaModal').style.display = 'none';
-      // ล้าง iframe ทิ้ง เพื่อให้วิดีโอหยุดเล่นและหยุดโหลดทันที
-      document.getElementById('videoZone').innerHTML = '';
+      document.getElementById('videoZone').innerHTML = ''; // เคลียร์วิดีโอทิ้งเพื่อหยุดเล่น
     }
   </script>
 </body>
