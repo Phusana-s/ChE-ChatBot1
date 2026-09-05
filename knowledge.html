@@ -13,34 +13,42 @@
     .header h1 { font-size: 24px; color: #2d3748; display: flex; align-items: center; gap: 10px; }
     .back-btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #ffffff; background-color: #7494c0; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; transition: background-color 0.2s; }
     .back-btn:hover { background-color: #5d7ca4; }
+    
     .knowledge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
-    @media (max-width: 500px) { .knowledge-grid { grid-template-columns: 1fr; } }
-    .tool-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.01); }
+    .tool-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.01); cursor: pointer; }
     .tool-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.05); border-color: #16a085; }
+    
     .tool-info { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 15px; }
     .tool-icon { width: 50px; height: 50px; border-radius: 10px; background-color: #e8f8f5; color: #16a085; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; border: 1px solid #a3e4d7; }
     .tool-title { font-size: 16px; font-weight: bold; color: #1a202c; margin-bottom: 4px; }
     .tool-desc { font-size: 13px; color: #718096; line-height: 1.4; }
     .media-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
-    .tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
+    .tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; border: none; text-decoration: none; }
     .tag-video { background-color: #feebc8; color: #c05621; }
     .tag-image { background-color: #ebf8ff; color: #2b6cb0; }
     .tag-pdf { background-color: #fed7d7; color: #9b2c2c; }
-    .open-btn { background: #1e7e34; color: white; text-decoration: none; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s; }
+    
+    .open-btn { background: #1e7e34; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s; cursor: pointer; }
     .open-btn:hover { background: #155d25; }
-    .open-btn i.fa-google-drive { color: #ffc107; }
-    /* ========================================= */
-    /* โค้ดปรับขนาดสำหรับหน้าจอมือถือ (Responsive) */
-    /* ========================================= */
+
+    /* Modal Styles สำหรับวิดีโอและสื่อ */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+    .modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 750px; max-height: 95vh; overflow-y: auto; display: flex; flex-direction: column; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #e2e8f0; background: #fff; position: sticky; top: 0; z-index: 10; }
+    .modal-header h3 { color: #2d3748; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+    .close-modal { background: none; border: none; font-size: 22px; cursor: pointer; color: #a0aec0; transition: 0.2s; }
+    .close-modal:hover { color: #e53e3e; }
+    
+    .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    .additional-files { display: flex; gap: 10px; flex-wrap: wrap; padding: 10px 0; border-top: 1px dashed #e2e8f0; }
+
     @media (max-width: 500px) {
-      /* ปรับหัวกระดาษและปุ่มกลับห้องแชต */
+      .knowledge-grid { grid-template-columns: 1fr; }
       .header { flex-direction: column; align-items: flex-start; gap: 12px; }
       .header h1 { font-size: 18px; }
       .back-btn { padding: 6px 12px; font-size: 12px; width: auto; align-self: flex-start; }
-      
-      /* ปรับกล่องรายการไฟล์และปุ่มเปิดไฟล์/ดาวน์โหลด */
-      .file-card { flex-direction: column; align-items: flex-start; gap: 15px; }
-      .download-btn, .open-btn { width: 100%; justify-content: center; padding: 10px; font-size: 12px; }
+      .modal-box { padding: 0; }
     }
   </style>
 </head>
@@ -50,28 +58,32 @@
       <h1><i class="fa-solid fa-book-open" style="color: #16a085;"></i> คลังความรู้ - คู่มือการใช้งานอุปกรณ์</h1>
       <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปห้องแชต</a>
     </div>
+
+    <!-- รายการเครื่องมือ -->
     <div class="knowledge-grid">
-      <div class="tool-card">
+      <!-- Card: BET -->
+      <div class="tool-card" onclick="openMediaModal('BET', 'ใส่_ID_VIDEO_BET_ที่นี่', 'ใส่_ID_PDF_BET_ที่นี่', '')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-chart-area"></i></div>
           <div>
             <div class="tool-title">BET</div>
-            <div class="tool-desc">เครื่องวิเคราะห์หาพื้นที่ผิว และการกระจายขนาดรูพรุนของสาร (Surface Area and Porosity Analyzer)</div>
+            <div class="tool-desc">เครื่องวิเคราะห์หาพื้นที่ผิว และการกระจายขนาดรูพรุนของสาร</div>
             <div class="media-tags">
               <span class="tag tag-video"><i class="fa-solid fa-video"></i> มีไฟล์วิดีโอ</span>
-              <span class="tag tag-image"><i class="fa-solid fa-image"></i> รูปภาพ</span>
               <span class="tag tag-pdf"><i class="fa-regular fa-file-pdf"></i> คู่มือ PDF</span>
             </div>
           </div>
         </div>
-        <a href="https://drive.google.com/drive/folders/1G3kO_d_BJwbwWT-rUkIsFnDRtBLR0--o?usp=sharing" target="_blank" class="open-btn"><i class="fa-brands fa-google-drive"></i> เปิดโฟลเดอร์ Google Drive</a>
+        <button class="open-btn"><i class="fa-regular fa-circle-play"></i> เปิดดูคู่มือการใช้งาน</button>
       </div>
-      <div class="tool-card">
+
+      <!-- Card: CHNS -->
+      <div class="tool-card" onclick="openMediaModal('CHNS', 'ใส่_ID_VIDEO_CHNS_ที่นี่', 'ใส่_ID_PDF_CHNS_ที่นี่', 'ใส่_ID_IMG_CHNS_ที่นี่')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-dna"></i></div>
           <div>
             <div class="tool-title">CHNS</div>
-            <div class="tool-desc">เครื่องวิเคราะห์หาปริมาณธาตุองค์ประกอบ คาร์บอน ไฮโดรเจน ไนโตรเจน และซัลเฟอร์ (Elemental Analyzer)</div>
+            <div class="tool-desc">เครื่องวิเคราะห์หาปริมาณธาตุองค์ประกอบ คาร์บอน ไฮโดรเจน ไนโตรเจน และซัลเฟอร์</div>
             <div class="media-tags">
               <span class="tag tag-video"><i class="fa-solid fa-video"></i> มีไฟล์วิดีโอ</span>
               <span class="tag tag-image"><i class="fa-solid fa-image"></i> รูปภาพ</span>
@@ -79,39 +91,123 @@
             </div>
           </div>
         </div>
-        <a href="https://drive.google.com/drive/folders/142tXZu3SYINo5XA2iiVlI9EbxqwkuYSs?usp=sharing" target="_blank" class="open-btn"><i class="fa-brands fa-google-drive"></i> เปิดโฟลเดอร์ Google Drive</a>
+        <button class="open-btn"><i class="fa-regular fa-circle-play"></i> เปิดดูคู่มือการใช้งาน</button>
       </div>
-      <div class="tool-card">
+
+      <!-- Card: FTIR -->
+      <div class="tool-card" onclick="openMediaModal('FTIR', 'ใส่_ID_VIDEO_FTIR_ที่นี่', '', '')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-wave-square"></i></div>
           <div>
             <div class="tool-title">FTIR</div>
-            <div class="tool-desc">เครื่องฟูเรียร์ทรานสฟอร์มอินฟราเรดสเปกโทรมิเตอร์ สำหรับวิเคราะห์สารอินทรีย์และหมู่ฟังก์ชัน (Fourier Transform Infrared Spectrometer)</div>
+            <div class="tool-desc">เครื่องฟูเรียร์ทรานสฟอร์มอินฟราเรดสเปกโทรมิเตอร์</div>
             <div class="media-tags">
               <span class="tag tag-video"><i class="fa-solid fa-video"></i> มีไฟล์วิดีโอ</span>
-              <span class="tag tag-image"><i class="fa-solid fa-image"></i> รูปภาพ</span>
-              <span class="tag tag-pdf"><i class="fa-regular fa-file-pdf"></i> คู่มือ PDF</span>
             </div>
           </div>
         </div>
-        <a href="https://drive.google.com/drive/folders/1mfVc3475iPuCSKPrX7SLYHcY-ljPgcpH?usp=sharing" target="_blank" class="open-btn"><i class="fa-brands fa-google-drive"></i> เปิดโฟลเดอร์ Google Drive</a>
+        <button class="open-btn"><i class="fa-regular fa-circle-play"></i> เปิดดูคู่มือการใช้งาน</button>
       </div>
-      <div class="tool-card">
+
+      <!-- Card: TGA -->
+      <div class="tool-card" onclick="openMediaModal('TGA', '', 'ใส่_ID_PDF_TGA_ที่นี่', '')">
         <div class="tool-info">
           <div class="tool-icon"><i class="fa-solid fa-temperature-high"></i></div>
           <div>
             <div class="tool-title">TGA</div>
-            <div class="tool-desc">เครื่องวิเคราะห์การเปลี่ยนแปลงน้ำหนักของสารโดยอาศัยความร้อน (Thermogravimetric Analyzer)</div>
+            <div class="tool-desc">เครื่องวิเคราะห์การเปลี่ยนแปลงน้ำหนักของสารโดยอาศัยความร้อน</div>
             <div class="media-tags">
-              <span class="tag tag-video"><i class="fa-solid fa-video"></i> มีไฟล์วิดีโอ</span>
-              <span class="tag tag-image"><i class="fa-solid fa-image"></i> รูปภาพ</span>
               <span class="tag tag-pdf"><i class="fa-regular fa-file-pdf"></i> คู่มือ PDF</span>
             </div>
           </div>
         </div>
-        <a href="https://drive.google.com/drive/folders/17UAWXmqPyc1CGORYM0QTr9Lfhl9f1Fmt?usp=sharing" target="_blank" class="open-btn"><i class="fa-brands fa-google-drive"></i> เปิดโฟลเดอร์ Google Drive</a>
+        <button class="open-btn"><i class="fa-regular fa-circle-play"></i> เปิดดูคู่มือการใช้งาน</button>
       </div>
     </div>
   </div>
+
+  <!-- Modal สำหรับแสดงวิดีโอและไฟล์ -->
+  <div class="modal-overlay" id="mediaModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle"><i class="fa-solid fa-circle-info" style="color: #16a085;"></i> คู่มือการใช้งาน</h3>
+        <button class="close-modal" onclick="closeMediaModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div style="padding: 20px;">
+        
+        <!-- โซนวิดีโอ -->
+        <div id="videoZone" class="video-container" style="display: none;">
+          <iframe id="mediaFrame" src="" allow="autoplay" allowfullscreen></iframe>
+        </div>
+        <div id="noVideoMsg" style="display: none; text-align: center; color: #718096; padding: 30px; background: #f8fafc; border-radius: 8px; margin-bottom: 15px;">
+          <i class="fa-solid fa-video-slash" style="font-size: 30px; margin-bottom: 10px; color: #cbd5e1;"></i><br>ไม่มีไฟล์วิดีโอสำหรับเครื่องมือนี้
+        </div>
+
+        <!-- โซนปุ่มเอกสารเพิ่มเติม -->
+        <div id="extraFilesZone" class="additional-files">
+          <span style="font-size: 13px; font-weight: bold; color: #4a5568; width: 100%; margin-bottom: 5px;">เอกสารเพิ่มเติม:</span>
+          <a id="btnPdf" href="#" target="_blank" class="tag tag-pdf" style="display: none; font-size: 14px; padding: 8px 15px;"><i class="fa-regular fa-file-pdf"></i> เปิดอ่านคู่มือ PDF</a>
+          <a id="btnImg" href="#" target="_blank" class="tag tag-image" style="display: none; font-size: 14px; padding: 8px 15px;"><i class="fa-solid fa-image"></i> ดูรูปภาพคู่มือ</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openMediaModal(title, videoId, pdfId, imageId) {
+      document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-microscope" style="color: #16a085;"></i> คู่มือการใช้งาน: ${title}`;
+      
+      const iframe = document.getElementById('mediaFrame');
+      const videoZone = document.getElementById('videoZone');
+      const noVideoMsg = document.getElementById('noVideoMsg');
+
+      // ตรวจสอบว่ามี Video ID หรือไม่
+      if (videoId && videoId.trim() !== "") {
+        // ใช้ /preview เพื่อให้เครื่องเล่น Google Drive ทำงาน
+        iframe.src = `https://drive.google.com/file/d/${videoId}/preview`;
+        videoZone.style.display = 'block';
+        noVideoMsg.style.display = 'none';
+      } else {
+        iframe.src = "";
+        videoZone.style.display = 'none';
+        noVideoMsg.style.display = 'block';
+      }
+
+      // จัดการปุ่ม PDF
+      const btnPdf = document.getElementById('btnPdf');
+      if (pdfId && pdfId.trim() !== "") {
+        btnPdf.href = `https://drive.google.com/file/d/${pdfId}/view`;
+        btnPdf.style.display = 'inline-flex';
+      } else {
+        btnPdf.style.display = 'none';
+      }
+
+      // จัดการปุ่มรูปภาพ
+      const btnImg = document.getElementById('btnImg');
+      if (imageId && imageId.trim() !== "") {
+        btnImg.href = `https://drive.google.com/file/d/${imageId}/view`;
+        btnImg.style.display = 'inline-flex';
+      } else {
+        btnImg.style.display = 'none';
+      }
+
+      // ซ่อนหมวดเอกสารเพิ่มเติมหากไม่มีทั้ง PDF และรูปภาพ
+      const extraZone = document.getElementById('extraFilesZone');
+      if (!pdfId && !imageId) {
+        extraZone.style.display = 'none';
+      } else {
+        extraZone.style.display = 'flex';
+      }
+
+      document.getElementById('mediaModal').style.display = 'flex';
+    }
+
+    function closeMediaModal() {
+      document.getElementById('mediaModal').style.display = 'none';
+      // ล้างค่า src เพื่อให้วิดีโอหยุดเล่นทันทีที่ปิดป๊อปอัป
+      document.getElementById('mediaFrame').src = '';
+    }
+  </script>
 </body>
 </html>
