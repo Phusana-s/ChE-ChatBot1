@@ -39,12 +39,12 @@
     }
     .drive-link:hover { background-color: #f8f9fa; color: #218838; border-color: #b1bbc4; }
     .drive-link i.fa-google-drive { color: #ffc107; font-size: 16px; }
+    .drive-link i.fa-link { color: #007bff; font-size: 16px; } /* ไอคอนลิงก์ทั่วไปสำหรับเว็บภายใน */
 
     .msg-row-user { display: flex; justify-content: flex-end; width: 100%; }
     .user-bubble { background-color: #8ce28a; padding: 10px 14px; border-radius: 15px; border-top-right-radius: 2px; font-size: 15px; color: #333; max-width: 85%; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 
     /* --- ส่วนควบคุมด้านล่าง --- */
-    /* --- แก้ไขเพิ่ม Safe Area สำหรับขอบจอล่าง --- */
     .bottom-controls-wrapper { 
       background-color: #ffffff; 
       border-top: 1px solid #ddd; 
@@ -75,7 +75,7 @@
       <div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>
       <div class="bot-bubble">
         สวัสดีครับ ยินดีต้อนรับสู่ระบบบริการอัตโนมัติ 🤖<br>
-        คุณสามารถกดเลือกหัวข้อที่เมนูด้านล่าง หรือพิมพ์ค้นหาแบบฟอร์ม/คู่มืออุปกรณ์แลปที่ต้องการได้เลยครับ (เช่น พิมพ์ว่า <b>"FTIR" "สแกนนิ้ว" "ติด F"</b>) บอตจะคัดกรองไฟล์มาให้ทันทีครับ!
+        คุณสามารถกดเลือกหัวข้อที่เมนูด้านล่าง หรือพิมพ์ค้นหาแบบฟอร์ม/คู่มืออุปกรณ์แลป/หรือติดตามสถานะที่ต้องการได้เลยครับ (เช่น พิมพ์ว่า <b>"FTIR" "สแกนนิ้ว" "ติดตาม" "แจ้งซ่อม"</b>) บอตจะคัดกรองลิงก์มาให้ทันทีครับ!
       </div>
     </div>
   </div>
@@ -85,7 +85,7 @@
       <button class="toggle-menu-btn" onclick="toggleRichMenu()">
         <i id="toggleIcon" class="fa-solid fa-table-cells-large"></i>
       </button>
-      <input type="text" class="chat-input" id="userInput" placeholder="พิมพ์ชื่อไฟล์ หรือระบุอุปกรณ์แลป..." onkeypress="handleKeyPress(event)">
+      <input type="text" class="chat-input" id="userInput" placeholder="พิมพ์ชื่อไฟล์ หรือระบุสิ่งที่ต้องการ..." onkeypress="handleKeyPress(event)">
       <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
 
@@ -133,14 +133,11 @@
       { id: 12, name: "เปิดโฟลเดอร์คู่มือ/วิดีโอเครื่อง CHNS", url: "https://drive.google.com/drive/folders/142tXZu3SYINo5XA2iiVlI9EbxqwkuYSs?usp=sharing", keys: ['chns', 'ซีเอชเอนเอส', 'elemental', 'ธาตุ', 'คู่มือแลป'] },
       { id: 13, name: "เปิดโฟลเดอร์คู่มือ/รูปภาพเครื่อง FTIR", url: "https://drive.google.com/drive/folders/1mfVc3475iPuCSKPrX7SLYHcY-ljPgcpH?usp=sharing", keys: ['ftir', 'เอฟทีไออาร์', 'infrared', 'spectrometer', 'คู่มือแลป'] },
       { id: 14, name: "เปิดโฟลเดอร์คู่มือ/วิดีโอเครื่อง TGA", url: "https://drive.google.com/drive/folders/17UAWXmqPyc1CGORYM0QTr9Lfhl9f1Fmt?usp=sharing", keys: ['tga', 'ทีจีเอ', 'thermogravimetric', 'ความร้อน', 'คู่มือแลป'] },
-      { id: 15, name: "ติดตามสถานะคำร้อง (เบิกอุปกรณ์/จองห้องปฏิบัติการ)", url: "equipments.html", keys: ['ติดตาม', 'สถานะ', 'ติดตามคำร้อง', 'สถานะอุปกรณ์', 'สถานะห้องแลป'] },
-      { id: 16, name: "ติดตามสถานะคำร้อง (ขอใช้ห้องเรียน/สแกนนิ้ว)", url: "classrooms.html", keys: ['ติดตาม', 'สถานะ', 'ติดตามคำร้อง', 'สถานะห้องเรียน', 'สถานะสแกนนิ้ว'] }
-  { 
-    id: 17, 
-    name: "ระบบแจ้งซ่อมและติดตามสถานะงานซ่อม", 
-    url: "Maintenance.html", 
-    keys: ['ติดตามงานซ่อม', 'สถานะซ่อม', 'แจ้งซ่อม', 'ซ่อม'] 
-  }
+      
+      /* --- ส่วนที่เพิ่มใหม่ สำหรับการติดตามสถานะและแจ้งซ่อม --- */
+      { id: 15, name: "ติดตามสถานะคำร้อง (เบิกอุปกรณ์/จองห้องปฏิบัติการ)", url: "equipments.html", keys: ['ติดตาม', 'สถานะ', 'ติดตามคำร้อง', 'สถานะอุปกรณ์', 'สถานะห้องแลป', 'เช็คสถานะ'] },
+      { id: 16, name: "ติดตามสถานะคำร้อง (ขอใช้ห้องเรียน/สแกนนิ้ว)", url: "classrooms.html", keys: ['ติดตาม', 'สถานะ', 'ติดตามคำร้อง', 'สถานะห้องเรียน', 'สถานะสแกนนิ้ว', 'เช็คสถานะ'] },
+      { id: 17, name: "ระบบแจ้งซ่อมและติดตามสถานะงานซ่อม", url: "Maintenance.html", keys: ['ติดตามงานซ่อม', 'สถานะซ่อม', 'แจ้งซ่อม', 'ซ่อม'] }
     ];
 
     function toggleRichMenu() {
@@ -181,14 +178,18 @@
       });
 
       if (matchedFiles.length > 0) {
-        botReplyHtml = `🔍 <b>พบข้อมูลคลังที่ใกล้เคียงคำค้นหา (${matchedFiles.length} รายการ):</b><br>คลิกเปิดดูลิงก์โฟลเดอร์ Google Drive จริงได้เลยครับ`;
+        botReplyHtml = `🔍 <b>พบข้อมูลที่เกี่ยวข้อง (${matchedFiles.length} รายการ):</b><br>คลิกเพื่อเปิดลิงก์ได้เลยครับ`;
         botReplyHtml += `<div class="form-card-container">`;
         matchedFiles.forEach(file => {
-          botReplyHtml += `<a href="${file.url}" target="_blank" class="drive-link"><i class="fa-brands fa-google-drive"></i> ${file.name}</a>`;
+          // ตรวจสอบไอคอน หากเป็นลิงก์ Google Drive ใช้ไอคอน Drive หากเป็นหน้า HTML ภายในเว็บใช้ไอคอน Link
+          let iconClass = file.url.includes('drive.google.com') ? 'fa-brands fa-google-drive' : 'fa-solid fa-link';
+          let targetAttr = file.url.includes('drive.google.com') ? 'target="_blank"' : '';
+          
+          botReplyHtml += `<a href="${file.url}" ${targetAttr} class="drive-link"><i class="${iconClass}"></i> ${file.name}</a>`;
         });
         botReplyHtml += `</div>`;
       } else {
-        botReplyHtml = `ไม่พบข้อมูลหรือไฟล์ที่เกี่ยวข้องกับ <b>"${userText}"</b> ครับ ลองพิมพ์คีย์เวิร์ดสั้นๆ เช่น "FTIR", "ใบคำร้อง" หรือ "ใบยืมคืน" ดูใหม่อีกครั้งครับ`;
+        botReplyHtml = `ไม่พบข้อมูลหรือไฟล์ที่เกี่ยวข้องกับ <b>"${userText}"</b> ครับ ลองพิมพ์คีย์เวิร์ดสั้นๆ เช่น "FTIR", "ใบคำร้อง", "ติดตาม", หรือ "แจ้งซ่อม" ดูใหม่อีกครั้งครับ`;
       }
 
       const botRow = document.createElement('div');
@@ -198,7 +199,11 @@
       scrollToBottom();
     }
 
-    function scrollToBottom() { const chatContainer = document.getElementById('chatContainer'); chatContainer.scrollTop = chatContainer.scrollHeight; }
+    function scrollToBottom() { 
+      const chatContainer = document.getElementById('chatContainer'); 
+      chatContainer.scrollTop = chatContainer.scrollHeight; 
+    }
+    
     window.onload = scrollToBottom;
   </script>
 </body>
