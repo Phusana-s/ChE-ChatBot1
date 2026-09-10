@@ -492,9 +492,15 @@
                 const cardHtml = `
                   <div style="background: #f8f9fa; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
                     <div style="font-weight: bold; color: #2d3748; margin-bottom: 8px;"><i class="fa-solid fa-door-open"></i> ${door.name}</div>
-                    <div style="display: flex; gap: 15px; font-size: 12px;">
-                      <div><span style="color:#64748b;">อ.ที่ปรึกษา:</span> <span style="background:${advColor}; color:${advText}; padding: 2px 8px; border-radius: 12px; font-weight:bold;">${door.adv}</span></div>
-                      <div><span style="color:#64748b;">แอดมิน:</span> <span style="background:${adminColor}; color:${adminText}; padding: 2px 8px; border-radius: 12px; font-weight:bold;">${door.admin}</span></div>
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 5px;">
+                        <span style="color:#64748b;">อ.ที่ปรึกษา:</span> 
+                        <span style="background:${advColor}; color:${advText}; padding: 3px 10px; border-radius: 12px; font-weight:bold;">${door.adv}</span>
+                      </div>
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color:#64748b;">แอดมิน:</span> 
+                        <span style="background:${adminColor}; color:${adminText}; padding: 3px 10px; border-radius: 12px; font-weight:bold;">${door.admin}</span>
+                      </div>
                     </div>
                   </div>
                 `;
