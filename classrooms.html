@@ -212,7 +212,7 @@
         <div id="r_other_user_div" class="form-group hidden"><label>โปรดระบุสถานะ</label><input type="text" id="r_otherUser"></div>
         <div class="form-group"><label>เบอร์โทรศัพท์ *</label><input type="tel" id="r_phone" required></div>
         <div class="form-group"><label>Email *</label><input type="email" id="r_email" required></div>
-        <div class="form-group"><label>ภาควิชาผู้ขอใช้ห้อง *</label><select id="r_dept" required><option value="">-- เลือกภาควิชา --</option><option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option><option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option><option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option><option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option><option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option><option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option><option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม</option><option value="ภาควิชาวิศวกรรมวัสดุและโลหการ">ภาควิชาวิศวกรรมวัสดุและโลหการ</option><option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option><option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option></select></div>
+        <div class="form-group"><label>ภาควิชาผู้ขอใช้ห้อง *</label><select id="r_dept" required><option value="">-- เลือกภาควิชา --</option><option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option><option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option><option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option><option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option><option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option><option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option><option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมวัสดุและโลหการ</option><option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option><option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option></select></div>
         <div class="form-group"><label>มีความประสงค์ขอใช้ห้องเพื่อ *</label><input type="text" id="r_purpose" required></div>
         <div class="form-group">
           <label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label>
@@ -312,16 +312,21 @@
       <div id="searchView">
         <div class="search-section"><input type="text" id="ticketInput" class="search-input" placeholder="กรอก Ticket ID (เช่น ROOM-xxxx หรือ SCAN-xxxx)"><button class="btn-search" onclick="fetchTicketData()"><i class="fa-solid fa-search"></i> ค้นหา</button></div>
       </div>
+      
+      <!-- ================= Modified Scan Detail View ================= -->
       <div id="scanDetailView" class="hidden">
         <h4 style="margin-bottom: 15px; color: #e67e22;"><i class="fa-solid fa-fingerprint"></i> ข้อมูลการขอสแกนลายนิ้วมือ</h4>
         <div class="detail-row"><span class="detail-label">รหัสอ้างอิง:</span> <span id="vs_id"></span></div>
         <div class="detail-row"><span class="detail-label">ผู้ยื่นเรื่อง:</span> <span id="vs_name"></span></div>
         <div class="detail-row"><span class="detail-label">วัตถุประสงค์:</span> <span id="vs_purpose"></span></div>
-        <div class="detail-row"><span class="detail-label">จุดสแกนนิ้ว:</span><br><span id="vs_doors" style="white-space: pre-wrap; display: block; background: #f8f9fa; padding: 10px; border-radius: 6px; margin-top: 5px;"></span></div>
-        <div class="detail-row" id="vs_evidence_row" style="margin-top: 15px;"></div>
-        <div class="detail-row" style="margin-top: 15px;"><span class="detail-label">การอนุมัติ (อาจารย์):</span><br><span id="vs_advisor_status" class="status-badge"></span></div>
-        <div class="detail-row"><span class="detail-label">สถานะ (แอดมิน):</span><br><span id="vs_admin_status" class="status-badge"></span></div>
+        <div class="detail-row" id="vs_evidence_row"></div>
+        
+        <h5 style="margin-top: 20px; border-bottom: 1px solid #eee; padding-bottom: 5px;">สถานะการอนุมัติแยกรายประตู</h5>
+        <div id="vs_doors_detail_list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+          <!-- ข้อมูลสถานะประตูจะถูกสร้างโดย Javascript -->
+        </div>
       </div>
+
       <div id="roomDetailView" class="hidden">
         <h4 style="margin-bottom: 15px; color: #9b59b6;"><i class="fa-solid fa-chalkboard-user"></i> ข้อมูลการขอใช้ห้องเรียน</h4>
         <div class="detail-row"><span class="detail-label">รหัสอ้างอิง:</span> <span id="vr_id"></span></div>
@@ -459,11 +464,43 @@
         if (data.error) { alert(data.error); } else {
           document.getElementById('searchView').classList.add('hidden'); document.getElementById('closeTrackBtn').classList.remove('hidden');
 
+          // ================= Modified fetch logic for Scan =================
           if (data.formType === "Scan") {
             document.getElementById('scanDetailView').classList.remove('hidden');
-            document.getElementById('vs_id').innerText = data.id; document.getElementById('vs_name').innerText = data.name; document.getElementById('vs_purpose').innerText = data.purpose; document.getElementById('vs_doors').innerText = data.doors; 
+            document.getElementById('vs_id').innerText = data.id; 
+            document.getElementById('vs_name').innerText = data.name; 
+            document.getElementById('vs_purpose').innerText = data.purpose; 
             document.getElementById('vs_evidence_row').innerHTML = data.evidence ? `<span class="detail-label">รูปหลักฐาน:</span> <a href="${data.evidence}" target="_blank" style="color: #007bff; font-weight: bold;"><i class="fa-solid fa-image"></i> คลิกเพื่อดูรูปภาพ</a>` : "";
-            setBadges('vs_advisor_status', data.advisor_status, 'vs_admin_status', data.admin_status, null);
+            
+            // สร้างกล่องแสดงสถานะแยกทีละประตู
+            const doorListContainer = document.getElementById('vs_doors_detail_list');
+            doorListContainer.innerHTML = "";
+            
+            if (data.doorsDetail && data.doorsDetail.length > 0) {
+              data.doorsDetail.forEach(door => {
+                // จัดการสีป้ายสถานะอาจารย์
+                let advColor = "#ffc107"; let advText = "#212529";
+                if (door.adv === "อนุมัติ") { advColor = "#28a745"; advText = "white"; }
+                else if (door.adv === "ไม่อนุมัติ") { advColor = "#dc3545"; advText = "white"; }
+                
+                // จัดการสีป้ายสถานะแอดมิน
+                let adminColor = "#ffc107"; let adminText = "#212529";
+                if (door.admin === "รับทราบ/ดำเนินการแล้ว" || door.admin === "อนุมัติ") { adminColor = "#28a745"; adminText = "white"; }
+                else if (door.admin === "ไม่อนุมัติ") { adminColor = "#dc3545"; adminText = "white"; }
+                else if (door.admin === "-") { door.admin = "รอตรวจสอบ"; }
+
+                const cardHtml = `
+                  <div style="background: #f8f9fa; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
+                    <div style="font-weight: bold; color: #2d3748; margin-bottom: 8px;"><i class="fa-solid fa-door-open"></i> ${door.name}</div>
+                    <div style="display: flex; gap: 15px; font-size: 12px;">
+                      <div><span style="color:#64748b;">อ.ที่ปรึกษา:</span> <span style="background:${advColor}; color:${advText}; padding: 2px 8px; border-radius: 12px; font-weight:bold;">${door.adv}</span></div>
+                      <div><span style="color:#64748b;">แอดมิน:</span> <span style="background:${adminColor}; color:${adminText}; padding: 2px 8px; border-radius: 12px; font-weight:bold;">${door.admin}</span></div>
+                    </div>
+                  </div>
+                `;
+                doorListContainer.innerHTML += cardHtml;
+              });
+            }
           } else if (data.formType === "Room") {
             document.getElementById('roomDetailView').classList.remove('hidden');
             document.getElementById('vr_id').innerText = data.id; document.getElementById('vr_name').innerText = data.name; document.getElementById('vr_room').innerText = data.room; document.getElementById('vr_purpose').innerText = data.purpose; document.getElementById('vr_slot').innerText = data.timeSlot; document.getElementById('vr_from').innerText = data.fromDate; document.getElementById('vr_to').innerText = data.toDate;
@@ -636,6 +673,21 @@
         eventList.innerHTML += '<div style="font-size: 13px; color: #94a3b8; text-align: center; padding: 20px;">ไม่มีรายการจองในเดือนนี้</div>';
       }
     }
+
+    // ==========================================
+    // ระบบอ่าน URL Parameter เพื่อดึงสถานะอัตโนมัติ
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const ticketId = urlParams.get('ticket');
+
+      if (ticketId) {
+        openTrackingModal();
+        document.getElementById('ticketInput').value = ticketId;
+        setTimeout(() => { fetchTicketData(); }, 500);
+      }
+    });
+
   </script>
 </body>
 </html>
