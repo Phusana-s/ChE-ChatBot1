@@ -678,6 +678,21 @@
         eventList.innerHTML += '<div style="font-size: 13px; color: #94a3b8; text-align: center; padding: 20px;">ไม่มีรายการจองในเดือนนี้</div>';
       }
     }
+
+    // ==========================================
+    // ระบบอ่าน URL Parameter เพื่อดึงสถานะอัตโนมัติ
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const ticketId = urlParams.get('ticket');
+
+      if (ticketId) {
+        openTrackingModal();
+        document.getElementById('ticketInput').value = ticketId;
+        setTimeout(() => { fetchTicketData(); }, 500);
+      }
+    });
+
   </script>
 </body>
 </html>
