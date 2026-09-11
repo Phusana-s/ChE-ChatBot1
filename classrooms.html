@@ -338,6 +338,7 @@
         <div class="detail-row"><span class="detail-label">ถึง:</span> <span id="vr_to"></span></div>
         <div class="detail-row" id="vr_evidence_row" style="margin-top: 15px;"></div>
         <div class="detail-row" style="margin-top: 15px;"><span class="detail-label">การอนุมัติ (อาจารย์):</span><br><span id="vr_advisor_status" class="status-badge"></span></div>
+        <div class="detail-row"><span class="detail-label">หัวหน้าธุรการ:</span><br><span id="vr_head_status" class="status-badge"></span></div>
         <div class="detail-row"><span class="detail-label">สถานะ (แอดมิน):</span><br><span id="vr_admin_status" class="status-badge"></span></div>
       </div>
       <button id="closeTrackBtn" class="btn-main hidden" style="background-color: #6c757d;" onclick="closeModal('trackingModal')">ปิดหน้าต่าง</button>
@@ -478,12 +479,18 @@
             
             if (data.doorsDetail && data.doorsDetail.length > 0) {
               data.doorsDetail.forEach(door => {
-                // จัดการสีป้ายสถานะอาจารย์
+                // จัดการสีป้าย: อาจารย์
                 let advColor = "#ffc107"; let advText = "#212529";
                 if (door.adv === "อนุมัติ") { advColor = "#28a745"; advText = "white"; }
                 else if (door.adv === "ไม่อนุมัติ") { advColor = "#dc3545"; advText = "white"; }
                 
-                // จัดการสีป้ายสถานะแอดมิน
+                // จัดการสีป้าย: หัวหน้าธุรการ
+                let headColor = "#ffc107"; let headText = "#212529";
+                if (door.head === "อนุมัติ") { headColor = "#28a745"; headText = "white"; }
+                else if (door.head === "ไม่อนุมัติ") { headColor = "#dc3545"; headText = "white"; }
+                else if (door.head === "-") { door.head = "รอตรวจสอบ"; }
+
+                // จัดการสีป้าย: แอดมิน
                 let adminColor = "#ffc107"; let adminText = "#212529";
                 if (door.admin === "รับทราบ/ดำเนินการแล้ว" || door.admin === "อนุมัติ") { adminColor = "#28a745"; adminText = "white"; }
                 else if (door.admin === "ไม่อนุมัติ") { adminColor = "#dc3545"; adminText = "white"; }
@@ -497,6 +504,10 @@
                         <span style="color:#64748b;">อ.ที่ปรึกษา:</span> 
                         <span style="background:${advColor}; color:${advText}; padding: 3px 10px; border-radius: 12px; font-weight:bold;">${door.adv}</span>
                       </div>
+                      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 5px;">
+                        <span style="color:#64748b;">หน.ธุรการ:</span> 
+                        <span style="background:${headColor}; color:${headText}; padding: 3px 10px; border-radius: 12px; font-weight:bold;">${door.head}</span>
+                      </div>
                       <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="color:#64748b;">แอดมิน:</span> 
                         <span style="background:${adminColor}; color:${adminText}; padding: 3px 10px; border-radius: 12px; font-weight:bold;">${door.admin}</span>
@@ -507,26 +518,54 @@
                 doorListContainer.innerHTML += cardHtml;
               });
             }
-          } else if (data.formType === "Room") {
+          } 
+          
+          // การแสดงผล Tracking: ส่วนห้องเรียน
+          else if (data.formType === "Room") {
             document.getElementById('roomDetailView').classList.remove('hidden');
-            document.getElementById('vr_id').innerText = data.id; document.getElementById('vr_name').innerText = data.name; document.getElementById('vr_room').innerText = data.room; document.getElementById('vr_purpose').innerText = data.purpose; document.getElementById('vr_slot').innerText = data.timeSlot; document.getElementById('vr_from').innerText = data.fromDate; document.getElementById('vr_to').innerText = data.toDate;
+            document.getElementById('vr_id').innerText = data.id; 
+            document.getElementById('vr_name').innerText = data.name; 
+            document.getElementById('vr_room').innerText = data.room; 
+            document.getElementById('vr_purpose').innerText = data.purpose; 
+            document.getElementById('vr_slot').innerText = data.timeSlot; 
+            document.getElementById('vr_from').innerText = data.fromDate; 
+            document.getElementById('vr_to').innerText = data.toDate;
             document.getElementById('vr_evidence_row').innerHTML = data.evidence ? `<span class="detail-label">รูปหลักฐาน:</span> <a href="${data.evidence}" target="_blank" style="color: #007bff; font-weight: bold;"><i class="fa-solid fa-image"></i> คลิกเพื่อดูรูปภาพ</a>` : "";
-            setBadges('vr_advisor_status', data.advisor_status, 'vr_admin_status', data.admin_status, null);
+            
+            setBadges('vr_advisor_status', data.advisor_status, 'vr_head_status', data.head_status, 'vr_admin_status', data.admin_status);
           }
         }
       } catch (err) { alert("เชื่อมต่อล้มเหลว"); } btn.innerHTML = '<i class="fa-solid fa-search"></i> ค้นหา'; btn.disabled = false;
     }
 
-    function setBadges(advId, advStatus, adminId, adminStatus, returnStatus) {
-      const advBadge = document.getElementById(advId); const currentAdv = advStatus || "รอตรวจสอบ"; advBadge.innerText = currentAdv;
-      if (currentAdv === "อนุมัติ" || currentAdv === "อนุมัติแล้ว" || currentAdv === "-") { advBadge.style.backgroundColor = "#28a745"; advBadge.style.color = "#ffffff"; } else if (currentAdv === "ไม่อนุมัติ") { advBadge.style.backgroundColor = "#dc3545"; advBadge.style.color = "#ffffff"; } else { advBadge.style.backgroundColor = "#ffc107"; advBadge.style.color = "#212529"; }
+    function setBadges(advId, advStatus, headId, headStatus, adminId, adminStatus) {
+      // จัดการสีป้าย: อาจารย์
+      const advBadge = document.getElementById(advId); 
+      const currentAdv = advStatus || "รอตรวจสอบ"; 
+      advBadge.innerText = currentAdv;
+      if (currentAdv === "อนุมัติ" || currentAdv === "อนุมัติแล้ว" || currentAdv === "-") { advBadge.style.backgroundColor = "#28a745"; advBadge.style.color = "#ffffff"; } 
+      else if (currentAdv === "ไม่อนุมัติ") { advBadge.style.backgroundColor = "#dc3545"; advBadge.style.color = "#ffffff"; } 
+      else { advBadge.style.backgroundColor = "#ffc107"; advBadge.style.color = "#212529"; }
       
-      const adminBadge = document.getElementById(adminId); const currentAdmin = adminStatus || "รอตรวจสอบ"; adminBadge.style.padding = "4px 10px";
-      if (currentAdmin === "รอตรวจสอบ") { adminBadge.innerHTML = "รอตรวจสอบ"; adminBadge.style.backgroundColor = "#ffc107"; adminBadge.style.color = "#212529"; } 
-      else if (currentAdmin === "อนุมัติ") { adminBadge.innerHTML = "อนุมัติ"; adminBadge.style.backgroundColor = "#28a745"; adminBadge.style.color = "#ffffff"; } 
-      else if (currentAdmin === "ไม่อนุมัติ") { adminBadge.innerHTML = "ไม่อนุมัติ"; adminBadge.style.backgroundColor = "#dc3545"; adminBadge.style.color = "#ffffff"; } 
-      else if (currentAdmin === "รับทราบ/ดำเนินการแล้ว") { adminBadge.innerHTML = "รับทราบ/ดำเนินการแล้ว"; adminBadge.style.backgroundColor = "#28a745"; adminBadge.style.color = "#ffffff"; } 
-      else { adminBadge.innerHTML = currentAdmin; adminBadge.style.backgroundColor = "#6c757d"; adminBadge.style.color = "#ffffff"; }
+      // จัดการสีป้าย: หัวหน้าธุรการ
+      if(headId) {
+         const headBadge = document.getElementById(headId); 
+         const currentHead = headStatus || "รอตรวจสอบ"; 
+         headBadge.innerText = currentHead;
+         if (currentHead === "อนุมัติ" || currentHead === "-") { headBadge.style.backgroundColor = "#28a745"; headBadge.style.color = "#ffffff"; } 
+         else if (currentHead === "ไม่อนุมัติ") { headBadge.style.backgroundColor = "#dc3545"; headBadge.style.color = "#ffffff"; } 
+         else { headBadge.style.backgroundColor = "#ffc107"; headBadge.style.color = "#212529"; }
+      }
+
+      // จัดการสีป้าย: แอดมิน
+      const adminBadge = document.getElementById(adminId); 
+      const currentAdmin = adminStatus || "รอตรวจสอบ"; 
+      adminBadge.style.padding = "4px 10px";
+      adminBadge.innerHTML = currentAdmin;
+      if (currentAdmin === "รอตรวจสอบ") { adminBadge.style.backgroundColor = "#ffc107"; adminBadge.style.color = "#212529"; } 
+      else if (currentAdmin === "อนุมัติ" || currentAdmin === "รับทราบ/ดำเนินการแล้ว") { adminBadge.style.backgroundColor = "#28a745"; adminBadge.style.color = "#ffffff"; } 
+      else if (currentAdmin === "ไม่อนุมัติ") { adminBadge.style.backgroundColor = "#dc3545"; adminBadge.style.color = "#ffffff"; } 
+      else { adminBadge.style.backgroundColor = "#6c757d"; adminBadge.style.color = "#ffffff"; }
     }
 
     /* =======================================================
