@@ -74,10 +74,14 @@
     .stat-card p { margin: 0; color: #64748b; font-weight: bold; font-size: 16px; }
     
     .charts-wrapper { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
-    /* ขยายความสูงของกล่องกราฟเพื่อให้มีพื้นที่พอสำหรับเปอร์เซ็นต์ */
-    .chart-container { flex: 1; min-width: 300px; background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; position: relative; height: 420px; }
+    .chart-container { flex: 1; min-width: 300px; background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; height: auto; display: flex; flex-direction: column; }
     
-    .table-responsive { overflow-x: auto; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; }
+    /* สไตล์สำหรับ Legend แยกส่วน */
+    .custom-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
+    .legend-item { display: flex; align-items: center; font-size: 12px; color: #475569; }
+    .legend-color { width: 14px; height: 14px; margin-right: 6px; border-radius: 3px; display: inline-block; }
+
+    .table-responsive { overflow-x: auto; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 10px; }
     .dashboard-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
     .dashboard-table th { background-color: #f1f5f9; padding: 12px; border-bottom: 2px solid #cbd5e1; font-weight: bold; color: #334155; }
     .dashboard-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; color: #475569; }
@@ -91,8 +95,8 @@
       .header { flex-direction: column; align-items: flex-start; gap: 12px; }
       .header h1 { font-size: 18px; }
       .back-btn { padding: 6px 12px; font-size: 12px; width: auto; align-self: flex-start; }
-      /* ปรับความสูงกราฟในมือถือ ให้เปอร์เซ็นต์ไม่ทับกับตัวหนังสือ */
-      .chart-container { height: 450px; } 
+      .custom-legend { gap: 8px; }
+      .legend-item { font-size: 11px; }
     }
   </style>
 </head>
@@ -197,18 +201,31 @@
 
         <!-- 2. กราฟพาย 2 กราฟ -->
         <div class="charts-wrapper">
+          <!-- กราฟที่ 1: ประเภท -->
           <div class="chart-container">
-            <h4 style="text-align: center; color: #4a5568; margin-bottom: 5px;">สัดส่วนประเภทงานซ่อม (%)</h4>
-            <canvas id="typeChart"></canvas>
+            <h4 style="text-align: center; color: #4a5568; margin-bottom: 15px;">สัดส่วนประเภทงานซ่อม (%)</h4>
+            <!-- จำกัดความสูงของ Canvas ให้คงที่ และซ่อนคำอธิบายเดิม -->
+            <div style="position: relative; height: 260px; width: 100%;">
+              <canvas id="typeChart"></canvas>
+            </div>
+            <!-- กล่อง Custom Legend -->
+            <div id="typeLegend" class="custom-legend"></div>
           </div>
+          
+          <!-- กราฟที่ 2: สถานะ -->
           <div class="chart-container">
-            <h4 style="text-align: center; color: #4a5568; margin-bottom: 5px;">สถานะการดำเนินงาน (จำนวน)</h4>
-            <canvas id="statusChart"></canvas>
+            <h4 style="text-align: center; color: #4a5568; margin-bottom: 15px;">สถานะการดำเนินงาน (จำนวน)</h4>
+            <!-- จำกัดความสูงของ Canvas ให้คงที่ และซ่อนคำอธิบายเดิม -->
+            <div style="position: relative; height: 260px; width: 100%;">
+              <canvas id="statusChart"></canvas>
+            </div>
+            <!-- กล่อง Custom Legend -->
+            <div id="statusLegend" class="custom-legend"></div>
           </div>
         </div>
 
         <!-- 3. ตารางสรุปผล -->
-        <h4 style="color: #4a5568; margin-bottom: 10px; border-left: 4px solid #007bff; padding-left: 8px;">ตารางสรุปข้อมูลแยกตามประเภท</h4>
+        <h4 style="color: #4a5568; margin-bottom: 10px; margin-top: 15px; border-left: 4px solid #007bff; padding-left: 8px;">ตารางสรุปข้อมูลแยกตามประเภท</h4>
         <div class="table-responsive">
           <table class="dashboard-table" id="summaryTable">
             <thead>
@@ -240,9 +257,12 @@
     function openTrackingModal() { document.getElementById('trackingModal').style.display = 'flex'; document.getElementById('searchView').classList.remove('hidden'); document.getElementById('detailView').classList.add('hidden'); document.getElementById('evalView').classList.add('hidden'); }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // ตัวแปรรองรับกราฟ เพื่อไว้ใช้ Clear กราฟเก่าทิ้งตอนโหลดใหม่
     let chartTypeInst = null;
     let chartStatusInst = null;
+
+    // สีประจำหมวดหมู่เพื่อให้กราฟและ Legend ตรงกัน
+    const typeColorsArr = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316'];
+    const statusColorsArr = ['#94a3b8', '#0ea5e9', '#f59e0b', '#22c55e', '#ef4444'];
 
     async function openDashboardModal() {
       document.getElementById('dashboardModal').style.display = 'flex';
@@ -268,7 +288,6 @@
     }
 
     function processDashboardData(dataArray) {
-      // 📌 กำหนดหมวดหมู่หลักให้ตรงกับ Google form (มี "ห้องเรียน" อยู่ในนี้แล้ว)
       const types = ["ไฟฟ้า", "ห้องเรียน", "ระบบน้ำ", "เครื่องจักร", "อุปกรณ์/ครุภัณฑ์", "เครื่องปรับอากาศ", "ซ่อมอาคาร"];
       const statuses = ["Waiting to be confirmed", "Confirmed", "In Progress", "Completed", "Unable to Repair"];
       const statusLabels = ["รอยืนยัน", "Confirmed", "In Progress", "Completed", "Unable to Repair"]; 
@@ -285,7 +304,6 @@
 
       dataArray.forEach(row => {
         let rawType = (row.type || "").trim();
-        // 📌 เช็คข้อมูล: ถ้าหาหมวดหมู่ไม่เจอ ให้โยนเข้า "เครื่องปรับอากาศ" ทันที (ไม่มีหมวด "อื่นๆ" แล้ว)
         let t = types.includes(rawType) ? rawType : "เครื่องปรับอากาศ";
         let s = statuses.includes(row.status) ? row.status : "Waiting to be confirmed";
         
@@ -294,7 +312,7 @@
         matrix[t][s]++;
       });
 
-      // 1. สร้างตาราง: นำเงื่อนไขการซ่อนบรรทัด 0 ออก เพื่อให้แสดงครบทุกบรรทัดเสมอ (รวมถึง "ห้องเรียน")
+      // 1. สร้างตารางแสดงผลครบทุกหมวดหมู่เสมอ
       const tbody = document.querySelector('#summaryTable tbody');
       tbody.innerHTML = '';
       types.forEach(t => {
@@ -311,13 +329,14 @@
 
       if(chartTypeInst) chartTypeInst.destroy();
       if(chartStatusInst) chartStatusInst.destroy();
-
       Chart.register(ChartDataLabels);
 
       // 2. วาดกราฟ: ประเภทงานซ่อม (Pie)
       const typeCtx = document.getElementById('typeChart').getContext('2d');
       const filteredTypes = types.filter(t => typeCounts[t] > 0); 
       const typeDataVals = filteredTypes.map(t => typeCounts[t]);
+      // ดึงสีให้ตรงกับตำแหน่งในอาร์เรย์ของแต่ละหัวข้อ
+      const activeTypeColors = filteredTypes.map((t, index) => typeColorsArr[index % typeColorsArr.length]);
       
       chartTypeInst = new Chart(typeCtx, {
         type: 'pie',
@@ -325,26 +344,16 @@
           labels: filteredTypes,
           datasets: [{
             data: typeDataVals,
-            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316'],
+            backgroundColor: activeTypeColors,
             borderWidth: 1
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          layout: {
-            // 📌 ปรับระยะเว้นขอบ (Padding) รอบด้านให้เยอะขึ้นมาก ป้องกันตัวเลขชนกราฟและ Legend
-            padding: { top: 40, bottom: 60, left: 40, right: 40 } 
-          },
+          layout: { padding: 30 }, // เว้นขอบทุกด้านให้เท่ากัน (มีพื้นที่ดึงตัวเลขออกไปเยอะขึ้น)
           plugins: {
-            legend: { 
-              position: 'bottom', 
-              labels: { 
-                boxWidth: 12, 
-                font: {size: 11}, 
-                padding: 15 // 📌 เว้นระยะห่างด้านล่างระหว่างกราฟและคำอธิบาย
-              } 
-            },
+            legend: { display: false }, // ปิด Legend มาตรฐานที่ไปกินพื้นที่กราฟ
             datalabels: {
               formatter: (value, ctx) => {
                 let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
@@ -354,17 +363,25 @@
               font: { weight: 'bold', size: 12 },
               anchor: 'end',
               align: 'end',
-              offset: 15 // 📌 ดันตัวหนังสือให้ห่างจากขอบกราฟออกไปอีก
+              offset: 5
             }
           }
         }
       });
+
+      // สร้าง Custom Legend ด้านล่างกราฟประเภทงานซ่อม
+      let typeLegendHtml = '';
+      filteredTypes.forEach((label, i) => {
+        typeLegendHtml += `<div class="legend-item"><span class="legend-color" style="background-color:${activeTypeColors[i]}"></span>${label}</div>`;
+      });
+      document.getElementById('typeLegend').innerHTML = typeLegendHtml;
 
       // 3. วาดกราฟ: สถานะงานซ่อม (Doughnut)
       const statusCtx = document.getElementById('statusChart').getContext('2d');
       const filteredStatusIdx = statuses.map((s, i) => statusCounts[s] > 0 ? i : -1).filter(i => i !== -1);
       const filteredStatusLabels = filteredStatusIdx.map(i => statusLabels[i]);
       const statusDataVals = filteredStatusIdx.map(i => statusCounts[statuses[i]]);
+      const activeStatusColors = filteredStatusIdx.map(i => statusColorsArr[i]); // ดึงสีที่ตรงกับสถานะ
       
       chartStatusInst = new Chart(statusCtx, {
         type: 'doughnut',
@@ -372,21 +389,16 @@
           labels: filteredStatusLabels,
           datasets: [{
             data: statusDataVals,
-            backgroundColor: ['#94a3b8', '#0ea5e9', '#f59e0b', '#22c55e', '#ef4444'], 
+            backgroundColor: activeStatusColors, 
             borderWidth: 1
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          layout: {
-            padding: { top: 10, bottom: 20, left: 10, right: 10 }
-          },
+          layout: { padding: 15 },
           plugins: {
-            legend: { 
-              position: 'bottom', 
-              labels: { boxWidth: 12, font: {size: 11}, padding: 15 } 
-            },
+            legend: { display: false }, // ปิด Legend มาตรฐาน
             datalabels: {
               formatter: (value) => { return value; }, 
               color: '#ffffff',
@@ -395,6 +407,13 @@
           }
         }
       });
+
+      // สร้าง Custom Legend ด้านล่างกราฟสถานะ
+      let statusLegendHtml = '';
+      filteredStatusLabels.forEach((label, i) => {
+        statusLegendHtml += `<div class="legend-item"><span class="legend-color" style="background-color:${activeStatusColors[i]}"></span>${label}</div>`;
+      });
+      document.getElementById('statusLegend').innerHTML = statusLegendHtml;
     }
 
     /* --------- ฟังก์ชันแจ้งซ่อม และค้นหาสถานะ --------- */
